@@ -1,0 +1,47 @@
+services:
+  food_retail_app:
+    build: .
+    container_name: food_retail_app
+    ports:
+      - "10000:10000"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      PORT: ${PORT}
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      food_retail_db:
+        condition: service_healthy
+    networks:
+      - food_retail_net
+
+  food_retail_db:
+    image: mysql:8
+    container_name: food_retail_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - food_retail_db_data:/var/lib/mysql
+    networks:
+      - food_retail_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  food_retail_db_data:
+
+networks:
+  food_retail_net:
+    driver: bridge
