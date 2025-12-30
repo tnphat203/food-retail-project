@@ -11,12 +11,15 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       PORT: ${PORT}
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: development 
     depends_on:
       food_retail_db:
         condition: service_healthy
     networks:
       - food_retail_net
+    volumes:
+      - .:/usr/src/app     
+    restart: unless-stopped
 
   food_retail_db:
     image: mysql:8
@@ -38,6 +41,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    restart: unless-stopped
 
 volumes:
   food_retail_db_data:
