@@ -18,7 +18,8 @@ services:
     networks:
       - food_retail_net
     volumes:
-      - .:/usr/src/app     
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     restart: unless-stopped
 
   food_retail_db:
