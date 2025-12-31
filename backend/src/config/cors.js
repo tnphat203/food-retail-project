@@ -1,12 +1,11 @@
 const cors = require("cors");
 
 module.exports = function corsMiddleware() {
-  const rawClientUrls =
-    process.env.CLIENT_URLS || process.env.CLIENT_URL || "";
+  const rawClientUrls = process.env.CLIENT_URLS || process.env.CLIENT_URL || "";
 
   const allowedOrigins = rawClientUrls
     .split(",")
-    .map(s => s.trim())
+    .map((s) => s.trim())
     .filter(Boolean);
 
   /* Allow local origins in non-production */
@@ -16,7 +15,7 @@ module.exports = function corsMiddleware() {
       "http://localhost:5173",
       "http://127.0.0.1:3000",
       "http://127.0.0.1:5173",
-    ].forEach(origin => {
+    ].forEach((origin) => {
       if (!allowedOrigins.includes(origin)) {
         allowedOrigins.push(origin);
       }

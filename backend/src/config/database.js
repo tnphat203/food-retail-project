@@ -1,10 +1,16 @@
-const mysql = require("mysql2");
+const sequelize = require("./sequelize");
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
-
-module.exports = pool.promise();
+// Connect to DB with retries
+module.exports = async function connectDB(retries = 5, delay = 3000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await sequelize.authenticate();
+      console.log("✅ Database connected");
+      return;
+    } catch {
+      console.warn(`⚠️ DB retry ${i + 1}/${retries}`);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+  throw new Error("❌ Unable to connect to database");
+};

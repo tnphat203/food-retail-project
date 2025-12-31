@@ -12,9 +12,6 @@ module.exports = function errorHandler(err, req, res, next) {
   /* Default error response */
   res.status(err.status || 500).json({
     message: "Internal Server Error",
-    error:
-      process.env.NODE_ENV === "production"
-        ? undefined
-        : err.message,
+    error: process.env.NODE_ENV === "production" ? undefined : err.message,
   });
 };
