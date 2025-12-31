@@ -1,16 +1,11 @@
 require("dotenv").config();
-const express = require("express");
+
+const app = require("./app");
 const sequelize = require("./config/sequelize");
-
-const app = express();
-app.use(express.json());
-
-app.get("/ping", (req, res) => {
-  res.json({ status: "ok" });
-});
 
 const PORT = process.env.PORT || 10000;
 
+/* Connect to database with retry */
 async function connectDB(retries = 5, delay = 3000) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -18,13 +13,16 @@ async function connectDB(retries = 5, delay = 3000) {
       console.log("Database connected");
       return;
     } catch (err) {
-      console.warn(`DB not ready, retrying in ${delay / 1000}s... (${i + 1}/${retries})`);
+      console.warn(
+        `Database not ready, retrying in ${delay / 1000}s (${i + 1}/${retries})`
+      );
       await new Promise(res => setTimeout(res, delay));
     }
   }
-  throw new Error("Unable to connect to database after multiple attempts");
+  throw new Error("Unable to connect to database");
 }
 
+/* Start server */
 (async () => {
   try {
     await connectDB();
@@ -35,7 +33,7 @@ async function connectDB(retries = 5, delay = 3000) {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Unable to start server:", error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 })();
