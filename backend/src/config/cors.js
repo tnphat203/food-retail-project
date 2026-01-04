@@ -8,7 +8,6 @@ module.exports = function corsMiddleware() {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  /* Allow local origins in non-production */
   if (process.env.NODE_ENV !== "production") {
     [
       "http://localhost:3000",
@@ -21,8 +20,6 @@ module.exports = function corsMiddleware() {
       }
     });
   }
-
-  console.log("Allowed CORS origins:", allowedOrigins);
 
   return cors({
     origin(origin, callback) {
