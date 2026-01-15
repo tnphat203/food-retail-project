@@ -1,11 +1,14 @@
 require("dotenv").config();
 const app = require("./app");
-const sequelize = require("./config/sequelize");
+
+const { sequelize } = require("./models");
+
 const { ENV } = require("./config/env");
 
 (async () => {
   try {
     await sequelize.authenticate();
+
     await sequelize.sync({ alter: true, logging: false });
 
     app.listen(ENV.PORT, () =>
