@@ -1,13 +1,15 @@
 require("dotenv").config();
 const app = require("./app");
-const { sequelize } = require("./models"); // import models trước sync
-const connectDB = require("./config/database");
+
+const { sequelize } = require("./models");
+
 const { ENV } = require("./config/env");
 
 (async () => {
   try {
-    await connectDB(); // retry connect DB
-    await sequelize.sync({ alter: true });
+    await sequelize.authenticate();
+
+    await sequelize.sync({ alter: true, logging: false });
 
     app.listen(ENV.PORT, () =>
       console.log(`✅ Server running on port ${ENV.PORT}`)

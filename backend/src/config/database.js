@@ -1,6 +1,5 @@
 const sequelize = require("./sequelize");
 
-// Connect to DB with retries
 module.exports = async function connectDB(retries = 5, delay = 3000) {
   for (let i = 0; i < retries; i++) {
     try {
