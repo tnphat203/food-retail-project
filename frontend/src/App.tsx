@@ -1,3 +1,6 @@
+import "./index.css";
 export default function App() {
-  return <h1>Food Retail Project</h1>;
+  return (
+    <div className="text-3xl font-bold text-primary">Tailwind OK – GoSnack</div>
+  );
 }
