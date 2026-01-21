@@ -13,7 +13,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       PORT: ${PORT}
-      NODE_ENV: production
+      NODE_ENV: development
     depends_on:
       food_retail_db:
         condition: service_healthy
