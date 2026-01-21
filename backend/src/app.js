@@ -7,6 +7,7 @@ const corsMiddleware = require("./config/cors");
 const errorHandler = require("./middlewares/errorHandler");
 
 const userRoutes = require("./routes/user.route");
+const categoryRoutes = require("./routes/category.routes");
 const healthRoutes = require("./routes/health.route");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/", healthRoutes);
 
 app.use((req, res) => {

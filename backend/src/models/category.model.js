@@ -21,9 +21,15 @@ const Category = sequelize.define(
       unique: true,
     },
 
+    parent_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+
     path: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      comment: "SEO path: /do-an-vat/khoai-tay-chien",
     },
   },
   {
@@ -31,11 +37,11 @@ const Category = sequelize.define(
     timestamps: true,
     underscored: true,
     indexes: [
-      {
-        fields: ["path"],
-      },
+      { fields: ["slug"] },
+      { fields: ["parent_id"] },
+      { fields: ["path"] },
     ],
-  }
+  },
 );
 
 module.exports = Category;
