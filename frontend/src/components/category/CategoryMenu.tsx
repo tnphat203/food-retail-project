@@ -18,18 +18,14 @@ export default function CategoryMenu() {
   };
 
   useEffect(() => {
-    console.log("[CategoryMenu] mounted");
-
     getCategoryTree()
       .then((data) => {
-        console.log("[CategoryMenu] category data:", data);
         setCategories(data);
       })
       .catch((err) => {
         console.error("[CategoryMenu] Failed to load categories", err);
       })
       .finally(() => {
-        console.log("[CategoryMenu] loading done");
         setLoading(false);
       });
   }, []);
