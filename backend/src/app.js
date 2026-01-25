@@ -5,6 +5,7 @@ require("express-async-errors");
 
 const corsMiddleware = require("./config/cors");
 const errorHandler = require("./middlewares/errorHandler");
+const uploadRoutes = require("./routes/upload.route");
 
 const userRoutes = require("./routes/user.route");
 const categoryRoutes = require("./routes/category.routes");
@@ -19,6 +20,7 @@ app.use(morgan("dev"));
 
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/", healthRoutes);
 
 app.use((req, res) => {
