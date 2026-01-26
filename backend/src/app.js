@@ -6,6 +6,7 @@ require("express-async-errors");
 const corsMiddleware = require("./config/cors");
 const errorHandler = require("./middlewares/errorHandler");
 const uploadRoutes = require("./routes/upload.route");
+const authRoutes = require("./routes/auth.route");
 
 const userRoutes = require("./routes/user.route");
 const categoryRoutes = require("./routes/category.routes");
@@ -18,6 +19,7 @@ app.use(corsMiddleware());
 app.use(express.json());
 app.use(morgan("dev"));
 
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/upload", uploadRoutes);

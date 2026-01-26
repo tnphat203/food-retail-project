@@ -23,6 +23,17 @@ const ENV = {
     PASSWORD: required("DB_PASSWORD"),
     NAME: required("DB_NAME"),
   },
+
+  JWT: {
+    SECRET: required("JWT_SECRET"),
+    EXPIRES_IN: process.env.JWT_EXPIRES_IN || "1d",
+  },
+
+  CLOUDINARY: {
+    CLOUD_NAME: required("CLOUDINARY_CLOUD_NAME"),
+    API_KEY: required("CLOUDINARY_API_KEY"),
+    API_SECRET: required("CLOUDINARY_API_SECRET"),
+  },
 };
 
 module.exports = { ENV };
