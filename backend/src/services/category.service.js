@@ -1,17 +1,12 @@
 const Category = require("../models/category.model");
 const { Op } = require("sequelize");
 
-/**
- * Tạo category
- */
 exports.createCategory = async ({ name, slug, parent_id }) => {
-  // Kiểm tra slug trùng
   const existed = await Category.findOne({ where: { slug } });
   if (existed) {
     throw new Error("Slug already exists");
   }
 
-  // Build path
   let path = `/${slug}`;
 
   if (parent_id) {
@@ -30,25 +25,16 @@ exports.createCategory = async ({ name, slug, parent_id }) => {
   });
 };
 
-/**
- * Lấy danh sách category (phẳng)
- */
 exports.getAllCategories = async () => {
   return Category.findAll({
     order: [["created_at", "ASC"]],
   });
 };
 
-/**
- * Lấy category theo slug
- */
 exports.getCategoryBySlug = async (slug) => {
   return Category.findOne({ where: { slug } });
 };
 
-/**
- * Cập nhật category
- */
 exports.updateCategory = async (id, payload) => {
   const category = await Category.findByPk(id);
   if (!category) return null;
@@ -57,16 +43,10 @@ exports.updateCategory = async (id, payload) => {
   return category;
 };
 
-/**
- * Xoá category
- */
 exports.deleteCategory = async (id) => {
   return Category.destroy({ where: { id } });
 };
 
-/**
- * Lấy category dạng cây (menu, sidebar)
- */
 exports.getCategoryTree = async () => {
   const categories = await Category.findAll({
     raw: true,

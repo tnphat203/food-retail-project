@@ -1,90 +1,96 @@
-# Food Retail Backend
+# Food Retail Backend API
 
-Backend API cho ứng dụng Food Retail sử dụng Node.js, Express, MySQL và Docker.
+Node.js + Express API for a food e-commerce platform.
 
-## 📋 Yêu cầu
+## 🏗️ Tech Stack
 
-- Docker >= 20.x
-- Docker Compose >= 1.29.x
+- **Framework**: Express.js + Node.js
+- **Database**: MySQL + Sequelize ORM
+- **Authentication**: JWT (Access & Refresh tokens)
+- **Security**: Helmet, CORS, Bcrypt password hashing
+- **File Storage**: Cloudinary CDN
+- **Logging**: Morgan
+- **Validation**: Joi
 
-## 🚀 Cài đặt
+## 📊 Database Models
 
-### 1. Clone và di chuyển vào thư mục
+- **User**: Authentication, roles (customer/staff/admin), status management
+- **Product/Category**: Catalog with hierarchical categories
+- **ProductVariant**: Price, size, stock management
+- **Order**: Order tracking with 6 statuses (pending → completed/cancelled)
+- **OrderItem, OrderPayment, OrderVoucher**: Order details
+- **Cart/CartItem**: Shopping cart
+- **Address**: Shipping address
 
-```bash
-git clone https://github.com/tnphat203/food-retail-project.git
-cd food-retail-project/backend
+The database includes indexing on important fields (slug, status, user_id, order_code, created_at).
+
+## 🔐 Security Features
+
+- ✅ JWT token authentication
+- ✅ Bcrypt password hashing (salt rounds: 10)
+- ✅ Helmet security headers
+- ✅ CORS whitelist configuration
+- ✅ Input validation & sanitization
+- ✅ Role-based access control (Admin middleware)
+- ✅ Centralized error handling
+
+## 🔌 API Routes
+
+### Auth
+
+- `POST /api/auth/register` - Register
+- `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Get user info
+- `POST /api/auth/refresh` - Refresh token
+
+### Categories
+
+- `GET /api/categories` - Get categories
+- `GET /api/categories/tree` - Get category tree
+- `POST /api/categories` - Create category (Admin)
+
+### Upload
+
+- `POST /api/upload` - Upload image → Cloudinary
+
+## 🎯 Key Features
+
+- Service layer pattern (Controllers → Services → Models)
+- Async/await + error handling
+- Database migration & sync automation
+- Environment-based configuration
+- File upload with Multer + Cloudinary
+- User validation (email, phone number, gender)
+- Order status management
+- Voucher/discount system ready
+
+## 📦 Main Dependencies
+
+```json
+{
+  "express": "4.22.1",
+  "sequelize": "6.37.7",
+  "mysql2": "3.16.0",
+  "jsonwebtoken": "9.0.3",
+  "bcrypt": "6.0.0",
+  "helmet": "8.1.0",
+  "cors": "2.8.5",
+  "multer": "2.0.2",
+  "cloudinary": "1.41.3",
+  "joi": "18.0.2",
+  "morgan": "1.10.1"
+}
 ```
 
-### 2. Tạo file `.env`
+## ✨ Production Ready
 
-```env
-# Node.js app
-PORT=10000
-NODE_ENV=development
+- Database connection retry logic
+- Proper HTTP status codes
+- Global error handler
+- Security headers
+- CORS configuration
+- Environment variables support
 
-# Database connection
-DB_HOST=food_retail_db
-DB_PORT=3306
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_NAME=your_database_name
-
-# MySQL container
-MYSQL_ROOT_PASSWORD=your_root_password
-MYSQL_DATABASE=your_database_name
-MYSQL_USER=your_db_user
-MYSQL_PASSWORD=your_db_password
-```
-
-> ⚠️ **Lưu ý:** Thay đổi các giá trị `your_*` thành thông tin thực tế của bạn
-
-### 3. Chạy ứng dụng
-
-```bash
-docker-compose up -d --force-recreate
-```
-
-Ứng dụng chạy tại: http://localhost:10000
-
-## 🐳 Lệnh Docker
-
-```bash
-# Xem log
-docker-compose logs -f
-
-# Dừng container
-docker-compose down
-
-# Rebuild và chạy lại
-docker-compose up -d --build --force-recreate
-
-# Truy cập container
-docker exec -it food_retail_app /bin/bash
-
-# Truy cập MySQL
-docker exec -it food_retail_db mysql -u user -ppass123 food_retail
-```
-
-## 📁 Cấu trúc
-
-```
-backend/
-├── src/
-│   ├── config/         # Database, environment config
-│   ├── controllers/    # Request handlers
-│   ├── models/         # Sequelize models
-│   ├── routes/         # API routes
-│   └── services/       # Business logic
-├── docker-compose.yml
-├── Dockerfile
-└── package.json
-```
-
-## 📞 Liên hệ
-
-**Trần Ngọc Phát** - tnphat203@gmail.com
-
----
-
-MIT License
+**Author**: Ngoc Phat Tran  
+**License**: ISC  
+**Version**: 1.0.0

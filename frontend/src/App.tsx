@@ -1,17 +1,24 @@
-import "./index.css";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
-import Hero from "./components/home/Hero";
-import BestSellerSection from "./components/home/BestSellerSection";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import { ROUTES } from "./constants/routes";
 
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       <Header />
+
       <main>
-        <Hero />
-        <BestSellerSection />
+        <Routes>
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        </Routes>
       </main>
+
       <Footer />
     </div>
   );

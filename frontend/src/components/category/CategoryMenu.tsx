@@ -1,38 +1,15 @@
 import { Menu } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import type { CategoryTree } from "../../types/categories";
-import { getCategoryTree } from "../../api/category.api";
+
 import CategoryDesktop from "./CategoryDesktop";
 import CategoryMobileDrawer from "./CategoryMobileDrawer";
+import { useCategoryMenu } from "./hooks/useCategoryMenu";
 
 export default function CategoryMenu() {
-  const navigate = useNavigate();
-  const [openMobile, setOpenMobile] = useState(false);
-  const [categories, setCategories] = useState<CategoryTree[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const go = (path: string) => {
-    navigate(`/category/${path}`);
-    setOpenMobile(false);
-  };
-
-  useEffect(() => {
-    getCategoryTree()
-      .then((data) => {
-        setCategories(data);
-      })
-      .catch((err) => {
-        console.error("[CategoryMenu] Failed to load categories", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  const { openMobile, setOpenMobile, categories, loading, go } =
+    useCategoryMenu();
 
   return (
     <>
-      {/* Mobile Button */}
       <button
         onClick={() => setOpenMobile(true)}
         className="flex items-center gap-2 px-4 py-2 rounded-full border
@@ -42,10 +19,8 @@ export default function CategoryMenu() {
         <span className="text-sm font-medium">Danh mục</span>
       </button>
 
-      {/* Desktop Mega Menu */}
       {!loading && <CategoryDesktop categories={categories} go={go} />}
 
-      {/* Mobile Drawer */}
       <CategoryMobileDrawer
         open={openMobile}
         onClose={() => setOpenMobile(false)}

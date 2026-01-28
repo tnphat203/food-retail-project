@@ -5,7 +5,7 @@ const cloudinary = require("../config/cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "products", // thư mục ảnh sản phẩm
+    folder: "products",
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });

@@ -2,13 +2,11 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t">
       <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm text-gray-600">
-        {/* Brand */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">GoSnack</h3>
           <p>Đồ ăn vặt yêu thích – giao nhanh, luôn tươi mỗi ngày.</p>
         </div>
 
-        {/* Company */}
         <div>
           <h4 className="font-semibold text-gray-900 mb-2">Công ty</h4>
           <ul className="space-y-1">
@@ -30,7 +28,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Support */}
         <div>
           <h4 className="font-semibold text-gray-900 mb-2">Hỗ trợ</h4>
           <ul className="space-y-1">
@@ -52,7 +49,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Contact */}
         <div>
           <h4 className="font-semibold text-gray-900 mb-2">Liên hệ</h4>
           <p>Email: support@gosnack.vn</p>
@@ -60,7 +56,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom */}
       <div className="border-t text-center py-4 text-xs text-gray-500">
         © 2026 GoSnack. Bảo lưu mọi quyền.
       </div>
