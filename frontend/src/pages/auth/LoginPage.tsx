@@ -1,44 +1,93 @@
-import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+import AuthLayout from "../../components/auth/AuthLayout";
 import { ROUTES } from "../../constants/routes";
+import { loginApi } from "../../services/auth.api";
+import { useAuthStore } from "../../store/authStore";
 
 export default function LoginPage() {
-  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (loading) return;
 
     try {
-      // 🔹 Sau này thay bằng API thật
-      // const res = await authApi.login(email, password);
+      setLoading(true);
 
-      const fakeResponse = {
-        accessToken: "fake-access-token",
-        user: {
-          id: "1",
-          name: "Ngọc Phát",
-          email: "phat@email.com",
-        },
-      };
+      const { accessToken, user } = await loginApi({ email, password });
 
-      // ✅ LƯU TOKEN + USER VÀO STORE
-      login(fakeResponse.accessToken, fakeResponse.user);
+      // ❌ bỏ localStorage (không lưu token nữa)
+      // localStorage.setItem("access_token", token);
+      // localStorage.setItem("user", JSON.stringify(user));
 
-      // ✅ ĐIỀU HƯỚNG
+      // ✅ set token vào memory + set user vào zustand
+      setAuth(accessToken, user);
+
       navigate(ROUTES.HOME, { replace: true });
-    } catch (error) {
-      console.error("Login failed", error);
-      alert("Đăng nhập thất bại");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data?.message || "Đăng nhập thất bại");
+      } else {
+        alert("Đã xảy ra lỗi, vui lòng thử lại");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* input email */}
-      {/* input password */}
-      <button type="submit">Đăng nhập</button>
-    </form>
+    <AuthLayout
+      title="Đăng nhập"
+      subtitle="Chào mừng bạn quay lại 👋"
+      bannerTitle="Snack ngon – Giao nhanh ⚡"
+      bannerDescription="Bánh kẹo, đồ ăn vặt cho mọi khoảnh khắc 🍿🍫"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+          className="w-full px-4 py-2 border rounded-lg"
+        />
+
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Mật khẩu"
+          required
+          className="w-full px-4 py-2 border rounded-lg"
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="
+            w-full py-2 rounded-lg text-white
+            bg-orange-500 hover:bg-orange-600
+            disabled:opacity-60
+          "
+        >
+          {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-center text-gray-500">
+        Chưa có tài khoản?{" "}
+        <Link to={ROUTES.REGISTER} className="text-orange-500 hover:underline">
+          Đăng ký
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }
