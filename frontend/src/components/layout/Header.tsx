@@ -1,5 +1,3 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useMemo, useRef, useState } from "react";
 import Logo from "./Logo";
 import CategoryMenu from "../category/CategoryMenu";
 import {
@@ -10,67 +8,22 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { useAuthStore } from "../../store/authStore";
-import { logoutApi } from "../../services/auth.api";
+import { useHeader } from "./hooks/useHeader";
 
 export default function Header() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const { user, isAuthenticated, clearAuth } = useAuthStore();
-
-  const [openUserMenu, setOpenUserMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-  const avatarSrc = useMemo(() => {
-    if (!user?.avatar) return null;
-    return user.avatar;
-  }, [user?.avatar]);
-
-  useEffect(() => {
-    if (!isAuthenticated) setOpenUserMenu(false);
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    setOpenUserMenu(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!menuRef.current) return;
-      if (!menuRef.current.contains(event.target as Node)) {
-        setOpenUserMenu(false);
-      }
-    };
-
-    if (openUserMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openUserMenu]);
-
-  const handleLogout = async () => {
-    try {
-      await logoutApi();
-    } catch {
-      // ignore error
-    } finally {
-      clearAuth();
-      setOpenUserMenu(false);
-      navigate("/login");
-    }
-  };
-
-  const handleClickUser = () => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    setOpenUserMenu((v) => !v);
-  };
+  const {
+    user,
+    isAuthenticated,
+    openUserMenu,
+    menuRef,
+    avatarSrc,
+    handleLogout,
+    handleClickUser,
+    goHome,
+    goCart,
+    goProfile,
+    goOrders,
+  } = useHeader();
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -78,7 +31,7 @@ export default function Header() {
         <div className="flex items-center gap-4 py-3 md:py-4">
           <div
             className="flex items-center gap-4 cursor-pointer shrink-0"
-            onClick={() => navigate("/")}
+            onClick={goHome}
           >
             <Logo />
           </div>
@@ -118,7 +71,7 @@ export default function Header() {
             </a>
 
             <button
-              onClick={() => navigate("/cart")}
+              onClick={goCart}
               className="relative flex items-center gap-2 hover:text-orange-500"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -167,14 +120,14 @@ export default function Header() {
                              rounded-xl shadow-lg overflow-hidden"
                 >
                   <button
-                    onClick={() => navigate("/profile")}
+                    onClick={goProfile}
                     className="w-full text-left px-4 py-3 text-sm hover:bg-orange-50"
                   >
                     Thông tin cá nhân
                   </button>
 
                   <button
-                    onClick={() => navigate("/orders")}
+                    onClick={goOrders}
                     className="w-full text-left px-4 py-3 text-sm hover:bg-orange-50"
                   >
                     Đơn hàng của tôi
