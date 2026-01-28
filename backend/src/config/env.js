@@ -25,8 +25,11 @@ const ENV = {
   },
 
   JWT: {
-    SECRET: required("JWT_SECRET"),
-    EXPIRES_IN: process.env.JWT_EXPIRES_IN || "1d",
+    ACCESS_SECRET: required("JWT_ACCESS_SECRET"),
+    REFRESH_SECRET: required("JWT_REFRESH_SECRET"),
+
+    ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
+    REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   },
 
   CLOUDINARY: {

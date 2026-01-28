@@ -27,11 +27,17 @@ module.exports = function corsMiddleware() {
         return callback(null, true);
       }
       return callback(
-        new Error("CORS policy: This origin is not allowed - " + origin)
+        new Error("CORS policy: This origin is not allowed - " + origin),
       );
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Cookie",
+    ],
+    exposedHeaders: ["Set-Cookie"],
   });
 };

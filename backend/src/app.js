@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 require("express-async-errors");
 
 const corsMiddleware = require("./config/cors");
@@ -18,6 +19,7 @@ app.use(helmet());
 app.use(corsMiddleware());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
