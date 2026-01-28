@@ -5,15 +5,28 @@ const { ENV } = require("../config/env");
 
 exports.register = async (req, res) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
+    let { firstName, lastName, gender, phone, email, password } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !gender || !phone || !email || !password) {
       return res.status(400).json({
         message: "Missing required fields",
       });
     }
 
-    email = email.toLowerCase().trim();
+    firstName = String(firstName).trim();
+    lastName = String(lastName).trim();
+    email = String(email).toLowerCase().trim();
+    phone = String(phone).trim();
+    gender = String(gender).trim();
+
+    const allowedGender = ["male", "female", "other"];
+    if (!allowedGender.includes(gender)) {
+      return res.status(400).json({ message: "Gender is invalid" });
+    }
+
+    if (!/^0\d{9}$/.test(phone)) {
+      return res.status(400).json({ message: "Phone number is invalid" });
+    }
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -22,11 +35,20 @@ exports.register = async (req, res) => {
       });
     }
 
+    const existingPhone = await User.findOne({ where: { phone } });
+    if (existingPhone) {
+      return res.status(409).json({
+        message: "Phone already exists",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       firstName,
       lastName,
+      gender,
+      phone,
       email,
       password: hashedPassword,
     });
@@ -97,6 +119,8 @@ exports.login = async (req, res) => {
         email: user.email,
         avatar: user.avatar,
         role: user.role,
+        gender: user.gender,
+        phone: user.phone,
       },
     });
   } catch (err) {
@@ -137,6 +161,8 @@ exports.refresh = async (req, res) => {
         email: user.email,
         avatar: user.avatar,
         role: user.role,
+        gender: user.gender,
+        phone: user.phone,
       },
     });
   } catch (err) {
