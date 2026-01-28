@@ -1,41 +1,27 @@
-import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 
 import AuthLayout from "../../components/auth/AuthLayout";
 import { ROUTES } from "../../constants/routes";
-import { loginApi } from "../../services/auth.api";
-import { useAuthStore } from "../../store/authStore";
+
+import TextInput from "../../components/ui/TextInput";
+import PasswordInput from "../../components/ui/PasswordInput";
+import ErrorBox from "../../components/ui/ErrorBox";
+import SubmitButton from "../../components/ui/SubmitButton";
+
+import { useLoginForm } from "./hooks/useLoginForm";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (loading) return;
-
-    try {
-      setLoading(true);
-
-      const { accessToken, user } = await loginApi({ email, password });
-      setAuth(accessToken, user);
-
-      navigate(ROUTES.HOME, { replace: true });
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || "Đăng nhập thất bại");
-      } else {
-        alert("Đã xảy ra lỗi, vui lòng thử lại");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    errorMsg,
+    showPassword,
+    setShowPassword,
+    handleSubmit,
+  } = useLoginForm();
 
   return (
     <AuthLayout
@@ -45,35 +31,32 @@ export default function LoginPage() {
       bannerDescription="Bánh kẹo, đồ ăn vặt cho mọi khoảnh khắc 🍿🍫"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
+        <TextInput
+          label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-          className="w-full px-4 py-2 border rounded-lg"
-        />
-
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mật khẩu"
-          required
-          className="w-full px-4 py-2 border rounded-lg"
-        />
-
-        <button
-          type="submit"
           disabled={loading}
-          className="
-            w-full py-2 rounded-lg text-white
-            bg-orange-500 hover:bg-orange-600
-            disabled:opacity-60
-          "
-        >
-          {loading ? "Đang đăng nhập..." : "Đăng nhập"}
-        </button>
+          placeholder="vd: abc@gmail.com"
+          onChange={setEmail}
+        />
+
+        <PasswordInput
+          label="Mật khẩu"
+          value={password}
+          disabled={loading}
+          placeholder="Nhập mật khẩu"
+          showPassword={showPassword}
+          onToggleShow={() => setShowPassword((prev) => !prev)}
+          onChange={setPassword}
+        />
+
+        <ErrorBox message={errorMsg} />
+
+        <SubmitButton
+          loading={loading}
+          text="Đăng nhập"
+          loadingText="Đang đăng nhập..."
+        />
       </form>
 
       <p className="mt-6 text-sm text-center text-gray-500">

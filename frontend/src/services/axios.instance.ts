@@ -49,6 +49,13 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
+const isAuthRoute = (url?: string) => {
+  if (!url) return false;
+
+ return ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"]
+  .some((p) => url.startsWith(p));
+};
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -57,12 +64,11 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as RetryConfig | undefined;
     if (!originalRequest) return Promise.reject(error);
 
-    if (error.response.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url?.includes("/auth/refresh")) {
-        setAccessToken(null);
-        return Promise.reject(error);
-      }
+    if (isAuthRoute(originalRequest.url)) {
+      return Promise.reject(error);
+    }
 
+    if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -88,7 +94,7 @@ axiosInstance.interceptors.response.use(
         if (!newToken) throw new Error("Missing accessToken from refresh");
 
         setAccessToken(newToken);
-        processQueue(null, newToken);
+        processQueue(undefined, newToken);
 
         originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${newToken}`;

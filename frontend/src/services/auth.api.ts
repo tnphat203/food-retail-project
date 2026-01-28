@@ -7,11 +7,15 @@ export interface User {
   email: string;
   role: string;
   avatar?: string | null;
+  gender?: "male" | "female" | "other";
+  phone?: string | null;
 }
 
 export interface RegisterPayload {
   firstName: string;
   lastName: string;
+  gender: "male" | "female" | "other";
+  phone: string;
   email: string;
   password: string;
 }
