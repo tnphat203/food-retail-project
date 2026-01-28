@@ -1,8 +1,3 @@
-// types/category.ts
-
-/* =========
- * Base type (khớp DB)
- * ========= */
 export type CategoryEntity = {
   id: number;
   name: string;
@@ -11,10 +6,6 @@ export type CategoryEntity = {
   parent_id: number | null;
 };
 
-/* =========
- * UI Tree type
- * ========= */
 export type CategoryTree = CategoryEntity & {
   children: CategoryTree[];
 };
-

@@ -1,4 +1,3 @@
-// src/services/category.service.ts
 import { ENV } from "../config/env";
 import { apiFetch,  } from "../lib/api";
 import type { CategoryTree } from "../types/categories";
