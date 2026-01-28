@@ -1,34 +1,36 @@
-// store/authStore.ts
 import { create } from "zustand";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import type { User } from "../services/auth.api";
+import { setAccessToken } from "../services/axios.instance";
 
 interface AuthState {
-  token: string | null;
   user: User | null;
-  login: (token: string, user: User) => void;
-  logout: () => void;
+  isAuthenticated: boolean;
+  hydrated: boolean;
+
+  setAuth: (accessToken: string, user: User) => void;
+  clearAuth: () => void;
+  setHydrated: (value: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem("access_token"),
-  user: localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")!)
-    : null,
+  user: null,
+  isAuthenticated: false,
+  hydrated: false,
 
-  login: (token, user) => {
-    localStorage.setItem("access_token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    set({ token, user });
+  setAuth: (accessToken, user) => {
+    setAccessToken(accessToken);
+    set({
+      user: { ...user, avatar: user.avatar ?? null },
+      isAuthenticated: true,
+    });
   },
 
-  logout: () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    set({ token: null, user: null });
+  clearAuth: () => {
+    setAccessToken(null);
+    set({ user: null, isAuthenticated: false });
+  },
+
+  setHydrated: (value) => {
+    set({ hydrated: value });
   },
 }));

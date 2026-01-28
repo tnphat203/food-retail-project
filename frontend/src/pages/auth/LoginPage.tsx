@@ -23,12 +23,6 @@ export default function LoginPage() {
       setLoading(true);
 
       const { accessToken, user } = await loginApi({ email, password });
-
-      // ❌ bỏ localStorage (không lưu token nữa)
-      // localStorage.setItem("access_token", token);
-      // localStorage.setItem("user", JSON.stringify(user));
-
-      // ✅ set token vào memory + set user vào zustand
       setAuth(accessToken, user);
 
       navigate(ROUTES.HOME, { replace: true });
