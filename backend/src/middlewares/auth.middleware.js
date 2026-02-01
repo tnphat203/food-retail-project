@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { ENV } = require("../config/env");
 
-module.exports = (req, res, next) => {
+exports.verifyAccessToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -11,14 +11,20 @@ module.exports = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, ENV.JWT.SECRET);
+    const decoded = jwt.verify(token, ENV.JWT.ACCESS_SECRET);
 
     req.user = decoded;
-
     next();
   } catch (err) {
     return res.status(401).json({
       message: "Invalid or expired token",
     });
   }
+};
+
+exports.requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ message: "Forbidden: Admin only" });
+  }
+  next();
 };

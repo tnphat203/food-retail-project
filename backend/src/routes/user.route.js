@@ -3,18 +3,35 @@ const router = express.Router();
 
 const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
-const requireAdmin = require("../middlewares/requireAdmin.middleware");
 
-router.get("/me", authMiddleware, userController.getMe);
-router.put("/me", authMiddleware, userController.updateMe);
+router.get("/me", authMiddleware.verifyAccessToken, userController.getMe);
+router.put("/me", authMiddleware.verifyAccessToken, userController.updateMe);
 
-router.get("/", authMiddleware, requireAdmin, userController.getAllUsers);
-router.get("/:id", authMiddleware, requireAdmin, userController.getUserById);
-router.put("/:id", authMiddleware, requireAdmin, userController.updateUser);
+router.get(
+  "/",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.getAllUsers,
+);
+
+router.get(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.getUserById,
+);
+
+router.put(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.updateUser,
+);
+
 router.patch(
   "/:id/status",
-  authMiddleware,
-  requireAdmin,
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
   userController.changeStatus,
 );
 

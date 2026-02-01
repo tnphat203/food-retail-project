@@ -177,3 +177,70 @@ exports.logout = async (req, res) => {
 
   return res.json({ message: "Logout success" });
 };
+
+exports.createAdmin = async (req, res) => {
+  try {
+    let { firstName, lastName, gender, phone, email, password } = req.body;
+
+    if (!firstName || !lastName || !gender || !phone || !email || !password) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
+    }
+
+    firstName = String(firstName).trim();
+    lastName = String(lastName).trim();
+    email = String(email).toLowerCase().trim();
+    phone = String(phone).trim();
+    gender = String(gender).trim();
+
+    const allowedGender = ["male", "female", "other"];
+    if (!allowedGender.includes(gender)) {
+      return res.status(400).json({ message: "Gender is invalid" });
+    }
+
+    if (!/^0\d{9}$/.test(phone)) {
+      return res.status(400).json({ message: "Phone number is invalid" });
+    }
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Email already exists",
+      });
+    }
+
+    const existingPhone = await User.findOne({ where: { phone } });
+    if (existingPhone) {
+      return res.status(409).json({
+        message: "Phone already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = await User.create({
+      firstName,
+      lastName,
+      gender,
+      phone,
+      email,
+      password: hashedPassword,
+      role: "admin",
+      status: "active",
+    });
+
+    return res.status(201).json({
+      message: "Create admin success",
+      user: {
+        id: admin.id,
+        email: admin.email,
+        role: admin.role,
+        status: admin.status,
+      },
+    });
+  } catch (err) {
+    console.error("❌ Create admin error:", err);
+    return res.status(500).json({ message: "Create admin failed" });
+  }
+};
