@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CategoryTree } from "../../../types/categories";
-import { getCategoryTree } from "../../../api/category.api";
+import { getCategoryTreeApi } from "../../../services/category";
 
 export function useCategoryMenu() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export function useCategoryMenu() {
   };
 
   useEffect(() => {
-    getCategoryTree()
+    getCategoryTreeApi()
       .then((data) => {
         setCategories(data);
       })

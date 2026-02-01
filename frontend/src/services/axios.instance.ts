@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { ENV } from "../config/env";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8686/api";
+const BASE_URL = ENV.API_URL;
 
 let accessToken: string | null = null;
 
@@ -52,8 +53,9 @@ type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 const isAuthRoute = (url?: string) => {
   if (!url) return false;
 
- return ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"]
-  .some((p) => url.startsWith(p));
+  return ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"].some(
+    (p) => url.startsWith(p)
+  );
 };
 
 axiosInstance.interceptors.response.use(
@@ -64,13 +66,16 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as RetryConfig | undefined;
     if (!originalRequest) return Promise.reject(error);
 
+    // Không refresh token cho các route auth
     if (isAuthRoute(originalRequest.url)) {
       return Promise.reject(error);
     }
 
+    // Nếu 401 thì thử refresh 1 lần
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      // Nếu đang refresh thì xếp hàng chờ
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });

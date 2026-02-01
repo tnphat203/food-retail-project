@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { User } from "../services/auth.api";
+import type { User } from "../types/user";
 import { setAccessToken } from "../services/axios.instance";
 
 interface AuthState {
