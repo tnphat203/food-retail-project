@@ -1,4 +1,5 @@
 const userService = require("../services/user.service");
+const cloudinary = require("../config/cloudinary");
 
 exports.getMe = async (req, res) => {
   try {
@@ -89,54 +90,48 @@ exports.updateUser = async (req, res) => {
     }
 
     const currentUser = await userService.getById(req.params.id);
-
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const updateData = {};
+
     const allowedStatus = ["active", "inactive", "banned"];
-    if (status && !allowedStatus.includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
+    if (allowedStatus.includes(status)) updateData.status = status;
 
     const allowedGender = ["male", "female", "other"];
-    if (gender && !allowedGender.includes(gender)) {
-      return res.status(400).json({ message: "Invalid gender" });
-    }
+    if (allowedGender.includes(gender)) updateData.gender = gender;
 
-    if (phone && typeof phone !== "string") {
-      return res.status(400).json({ message: "Invalid phone" });
-    }
+    if (typeof phone === "string") updateData.phone = phone;
+    if (phone === null || phone === "") updateData.phone = null;
 
-    if (email && typeof email !== "string") {
-      return res.status(400).json({ message: "Invalid email" });
-    }
+    if (typeof email === "string") updateData.email = email;
 
-    if (dateOfBirth) {
-      const isValidDOB =
-        typeof dateOfBirth === "string" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth);
+    if (typeof firstName === "string") updateData.firstName = firstName;
+    if (typeof lastName === "string") updateData.lastName = lastName;
 
-      if (!isValidDOB) {
-        return res.status(400).json({
-          message: "Invalid dateOfBirth format. Use YYYY-MM-DD",
-        });
+    if (dateOfBirth !== undefined) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
+        updateData.dateOfBirth = dateOfBirth;
+      } else {
+        updateData.dateOfBirth = null;
       }
     }
 
-    const updated = await userService.update(req.params.id, {
-      status,
-      firstName,
-      lastName,
-      gender,
-      phone,
-      dateOfBirth,
-      email,
-    });
+    if (req.file) {
+      if (currentUser.avatarPublicId) {
+        try {
+          await cloudinary.uploader.destroy(currentUser.avatarPublicId);
+        } catch (err) {
+          console.error("Delete old avatar failed:", err.message);
+        }
+      }
 
-    if (!updated) {
-      return res.status(404).json({ message: "User not found" });
+      updateData.avatar = req.file.path;
+      updateData.avatarPublicId = req.file.filename;
     }
+
+    const updated = await userService.update(req.params.id, updateData);
 
     return res.json({
       message: "User updated",

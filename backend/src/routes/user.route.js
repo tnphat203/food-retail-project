@@ -3,9 +3,16 @@ const router = express.Router();
 
 const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
+const upload = require("../middlewares/upload");
 
 router.get("/me", authMiddleware.verifyAccessToken, userController.getMe);
-router.put("/me", authMiddleware.verifyAccessToken, userController.updateMe);
+
+router.put(
+  "/me",
+  authMiddleware.verifyAccessToken,
+  upload.single("avatar"),
+  userController.updateMe,
+);
 
 router.get(
   "/",
@@ -25,6 +32,7 @@ router.put(
   "/:id",
   authMiddleware.verifyAccessToken,
   authMiddleware.requireAdmin,
+  upload.single("avatar"),
   userController.updateUser,
 );
 

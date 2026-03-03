@@ -45,6 +45,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    avatarPublicId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     role: {
       type: DataTypes.ENUM("customer", "staff", "admin"),
       defaultValue: "customer",
@@ -58,7 +62,7 @@ const User = sequelize.define(
     tableName: "users",
     timestamps: true,
     underscored: true,
-  }
+  },
 );
 
 module.exports = User;

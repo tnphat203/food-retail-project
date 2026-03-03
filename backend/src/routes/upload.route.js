@@ -3,10 +3,13 @@ const upload = require("../middlewares/upload");
 
 const router = express.Router();
 
-router.post("/upload", upload.single("image"), (req, res) => {
-  res.status(200).json({
-    message: "Upload thành công",
-    imageUrl: req.file.path,
+router.post("/", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "Không có file upload" });
+  }
+
+  res.json({
+    url: req.file.path,
     publicId: req.file.filename,
   });
 });
