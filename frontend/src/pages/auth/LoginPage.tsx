@@ -8,7 +8,7 @@ import PasswordInput from "../../components/ui/PasswordInput";
 import ErrorBox from "../../components/ui/ErrorBox";
 import SubmitButton from "../../components/ui/SubmitButton";
 
-import { useLoginForm } from "./hooks/useLoginForm";
+import { useLoginForm } from "../../hooks/auth/useLoginForm";
 
 export default function LoginPage() {
   const {

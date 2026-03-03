@@ -3,50 +3,53 @@ export type Option<T extends string = string> = {
   value: T;
 };
 
-export type AdminFilterSelect<T extends string = string> = {
+export type FilterSelect<T extends string = string> = {
   label: string;
   value: T;
   onChange: (v: T) => void;
-  options: Option<T>[];
+  options: readonly Option<T>[];
 };
 
-export type AdminFiltersBarProps<T extends string = string> = {
+export type AdminFiltersBarProps = {
   search: string;
   onSearchChange: (v: string) => void;
-  searchPlaceholder?: string;
-  selects?: AdminFilterSelect<T>[];
+  selects: FilterSelect[];
 };
 
-export default function AdminFiltersBar<T extends string = string>({
+export default function AdminFiltersBar({
   search,
   onSearchChange,
-  searchPlaceholder = "Tìm kiếm...",
-  selects = [],
-}: AdminFiltersBarProps<T>) {
+  selects,
+}: AdminFiltersBarProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-      <div className="flex-1">
+    <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col gap-4">
+      <div className="relative max-w-xs">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          🔍
+        </span>
         <input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+          placeholder="Tìm kiếm khách hàng..."
+          className="w-full pl-9 pr-3 py-2 text-sm border rounded-lg 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        {selects.map((s, idx) => (
-          <div key={idx} className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">{s.label}:</span>
+      <div className="flex flex-wrap gap-4">
+        {selects.map((s) => (
+          <div key={s.label} className="flex flex-col text-sm min-w-[140px]">
+            <label className="text-gray-500 mb-1">{s.label}</label>
 
             <select
               value={s.value}
-              onChange={(e) => s.onChange(e.target.value as T)}
-              className="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+              onChange={(e) => s.onChange(e.target.value)}
+              className="border rounded-lg px-3 py-2 bg-white text-sm
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {s.options.map((op) => (
-                <option key={op.value} value={op.value}>
-                  {op.label}
+              {s.options.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </select>

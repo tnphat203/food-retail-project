@@ -2,8 +2,8 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { ROUTES } from "../../../constants/routes";
-import { registerApi } from "../../../services/auth.api";
+import { ROUTES } from "../../constants/routes";
+import { registerApi } from "../../services/auth.api";
 
 type Gender = "male" | "female" | "other";
 

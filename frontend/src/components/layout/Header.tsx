@@ -6,6 +6,7 @@ import {
   User as UserIcon,
   Phone,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 
 import { useHeader } from "./hooks/useHeader";
@@ -14,6 +15,7 @@ export default function Header() {
   const {
     user,
     isAuthenticated,
+    isAdmin,
     openUserMenu,
     menuRef,
     avatarSrc,
@@ -23,6 +25,7 @@ export default function Header() {
     goCart,
     goProfile,
     goOrders,
+    goAdmin,
   } = useHeader();
 
   return (
@@ -98,7 +101,7 @@ export default function Header() {
                     alt="avatar"
                     className="w-8 h-8 rounded-full object-cover border"
                     onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "";
+                      e.currentTarget.src = "";
                     }}
                   />
                 ) : (
@@ -119,6 +122,16 @@ export default function Header() {
                   className="absolute right-0 mt-2 w-56 bg-white border
                              rounded-xl shadow-lg overflow-hidden"
                 >
+                  {isAdmin && (
+                    <button
+                      onClick={goAdmin}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-orange-50"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-orange-500" />
+                      Trang quản trị
+                    </button>
+                  )}
+
                   <button
                     onClick={goProfile}
                     className="w-full text-left px-4 py-3 text-sm hover:bg-orange-50"

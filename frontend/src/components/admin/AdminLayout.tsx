@@ -5,7 +5,7 @@ const navItems = [
   { label: "Dashboard", to: ROUTES.ADMIN_DASHBOARD },
   { label: "Products", to: ROUTES.ADMIN_PRODUCTS },
   { label: "Orders", to: ROUTES.ADMIN_ORDERS },
-  { label: "Users", to: ROUTES.ADMIN_USERS },
+  { label: "Customers", to: ROUTES.ADMIN_CUSTOMERS },
   { label: "Vouchers", to: ROUTES.ADMIN_VOUCHERS },
   { label: "Reviews", to: ROUTES.ADMIN_REVIEWS },
 

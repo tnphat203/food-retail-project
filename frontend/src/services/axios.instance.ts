@@ -66,16 +66,13 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as RetryConfig | undefined;
     if (!originalRequest) return Promise.reject(error);
 
-    // Không refresh token cho các route auth
     if (isAuthRoute(originalRequest.url)) {
       return Promise.reject(error);
     }
 
-    // Nếu 401 thì thử refresh 1 lần
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Nếu đang refresh thì xếp hàng chờ
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });

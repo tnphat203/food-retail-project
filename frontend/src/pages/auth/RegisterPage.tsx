@@ -9,7 +9,7 @@ import PasswordInput from "../../components/ui/PasswordInput";
 import ErrorBox from "../../components/ui/ErrorBox";
 import SubmitButton from "../../components/ui/SubmitButton";
 
-import { useRegisterForm } from "./hooks/useRegisterForm";
+import { useRegisterForm } from "../../hooks/auth/useRegisterForm";
 
 type Gender = "male" | "female" | "other";
 

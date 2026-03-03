@@ -9,7 +9,7 @@ export const ROUTES = {
   ADMIN_DASHBOARD: "/admin/dashboard",
   ADMIN_PRODUCTS: "/admin/products",
   ADMIN_ORDERS: "/admin/orders",
-  ADMIN_USERS: "/admin/users",
+  ADMIN_CUSTOMERS: "/admin/customers",
   ADMIN_SETTINGS: "/admin/settings",
   ADMIN_VOUCHERS: "/admin/vouchers",
   ADMIN_REVIEWS: "/admin/reviews",

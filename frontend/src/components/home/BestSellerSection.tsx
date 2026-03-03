@@ -3,9 +3,6 @@ import type { Product } from "../../types/product";
 const PRODUCT_IMAGE =
   "https://res.cloudinary.com/dqucswhro/image/upload/v1769333596/kopiko_skfkhw.webp";
 
-/* =========
- * Fake data – chỉ dùng tạm
- * ========= */
 const bestSellerProducts: Product[] = [
   {
     id: 1,
@@ -55,9 +52,6 @@ const bestSellerProducts: Product[] = [
   },
 ];
 
-/* =========
- * Component
- * ========= */
 export default function BestSellerSection() {
   return (
     <section className="px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">

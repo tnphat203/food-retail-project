@@ -18,6 +18,11 @@ export function useHeader() {
     return user.avatar;
   }, [user?.avatar]);
 
+  const isAdmin = useMemo(() => {
+    if (!user) return false;
+    return user.role === "admin";
+  }, [user]);
+
   useEffect(() => {
     if (!isAuthenticated) setOpenUserMenu(false);
   }, [isAuthenticated]);
@@ -68,9 +73,12 @@ export function useHeader() {
   const goProfile = () => navigate("/profile");
   const goOrders = () => navigate("/orders");
 
+  const goAdmin = () => navigate("/admin");
+
   return {
     user,
     isAuthenticated,
+    isAdmin,
     openUserMenu,
     setOpenUserMenu,
     menuRef,
@@ -81,5 +89,6 @@ export function useHeader() {
     goCart,
     goProfile,
     goOrders,
+    goAdmin,
   };
 }
