@@ -2,20 +2,32 @@ const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
 
+const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     return {
-      folder: "users",
-      format: file.mimetype.split("/")[1],
+      folder: `epam//${req.user?.id || "guest"}`,
       public_id: `user-${Date.now()}`,
+      resource_type: "image",
+
+      transformation: [
+        {
+          width: 500,
+          height: 500,
+          crop: "fill",
+          quality: "auto",
+          fetch_format: "auto",
+        },
+      ],
     };
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith("image/")) {
-    return cb(new Error("Chỉ cho phép upload ảnh"), false);
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    return cb(new Error("Chỉ cho phép upload jpg, png, webp"), false);
   }
   cb(null, true);
 };

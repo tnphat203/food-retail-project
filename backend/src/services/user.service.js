@@ -7,6 +7,12 @@ exports.getById = async (id) => {
   });
 };
 
+exports.getByEmail = async (email) => {
+  return await User.findOne({
+    where: { email },
+  });
+};
+
 exports.update = async (id, data) => {
   const user = await User.findByPk(id);
 
@@ -20,18 +26,36 @@ exports.update = async (id, data) => {
   return result;
 };
 
-exports.getAllPaginated = async ({ page, limit, search, role, status }) => {
+exports.getAllPaginated = async ({
+  page,
+  limit,
+  search,
+  role,
+  status,
+  gender,
+}) => {
   const where = {};
 
-  if (role) where.role = role;
+  if (role) {
+    where.role = role;
+  }
 
-  if (status) where.status = status;
+  if (status) {
+    where.status = status;
+  }
+
+  if (gender) {
+    where.gender = gender;
+  }
 
   if (search) {
+    const keyword = `%${search}%`;
+
     where[Op.or] = [
-      { firstName: { [Op.like]: `%${search}%` } },
-      { lastName: { [Op.like]: `%${search}%` } },
-      { email: { [Op.like]: `%${search}%` } },
+      { firstName: { [Op.like]: keyword } },
+      { lastName: { [Op.like]: keyword } },
+      { email: { [Op.like]: keyword } },
+      { phone: { [Op.like]: keyword } },
     ];
   }
 
@@ -42,7 +66,9 @@ exports.getAllPaginated = async ({ page, limit, search, role, status }) => {
     limit,
     offset,
     order: [["createdAt", "DESC"]],
-    attributes: { exclude: ["password"] },
+    attributes: {
+      exclude: ["password"],
+    },
   });
 
   return {

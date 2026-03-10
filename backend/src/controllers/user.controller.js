@@ -39,6 +39,7 @@ exports.updateMe = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);
+
     const limit = Math.min(
       Math.max(parseInt(req.query.limit || "10", 10), 1),
       100,
@@ -47,6 +48,7 @@ exports.getAllUsers = async (req, res) => {
     const search = (req.query.search || "").trim();
     const role = (req.query.role || "").trim();
     const status = (req.query.status || "").trim();
+    const gender = (req.query.gender || "").trim();
 
     const result = await userService.getAllPaginated({
       page,
@@ -54,12 +56,15 @@ exports.getAllUsers = async (req, res) => {
       search,
       role,
       status,
+      gender,
     });
 
     return res.json(result);
   } catch (err) {
     console.error("getAllUsers error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -77,11 +82,12 @@ exports.getUserById = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-exports.updateUser = async (req, res) => {
+exports.updateUserInfo = async (req, res) => {
   try {
     const { status, firstName, lastName, gender, phone, dateOfBirth, email } =
       req.body;
+
+    const userId = req.params.id;
 
     if (req.body.role !== undefined) {
       return res.status(403).json({
@@ -89,57 +95,184 @@ exports.updateUser = async (req, res) => {
       });
     }
 
-    const currentUser = await userService.getById(req.params.id);
+    if (req.user.role !== "admin" && req.user.id != userId) {
+      return res.status(403).json({
+        message: "You are not allowed to update this user",
+      });
+    }
+
+    const currentUser = await userService.getById(userId);
+
     if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
     const updateData = {};
 
-    const allowedStatus = ["active", "inactive", "banned"];
-    if (allowedStatus.includes(status)) updateData.status = status;
+    if (status !== undefined) {
+      const allowedStatus = ["active", "inactive", "banned"];
 
-    const allowedGender = ["male", "female", "other"];
-    if (allowedGender.includes(gender)) updateData.gender = gender;
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
 
-    if (typeof phone === "string") updateData.phone = phone;
-    if (phone === null || phone === "") updateData.phone = null;
+      if (req.user.role !== "admin") {
+        return res.status(403).json({
+          message: "Only admin can update status",
+        });
+      }
 
-    if (typeof email === "string") updateData.email = email;
+      updateData.status = status;
+    }
 
-    if (typeof firstName === "string") updateData.firstName = firstName;
-    if (typeof lastName === "string") updateData.lastName = lastName;
+    if (gender !== undefined) {
+      const allowedGender = ["male", "female", "other"];
+
+      if (!allowedGender.includes(gender)) {
+        return res.status(400).json({
+          message: "Invalid gender",
+        });
+      }
+
+      updateData.gender = gender;
+    }
+
+    if (typeof firstName === "string") {
+      const name = firstName.trim();
+
+      if (name.length === 0 || name.length > 50) {
+        return res.status(400).json({
+          message: "First name invalid",
+        });
+      }
+
+      updateData.firstName = name;
+    }
+
+    if (typeof lastName === "string") {
+      const name = lastName.trim();
+
+      if (name.length === 0 || name.length > 50) {
+        return res.status(400).json({
+          message: "Last name invalid",
+        });
+      }
+
+      updateData.lastName = name;
+    }
+
+    if (phone !== undefined) {
+      if (phone === null || phone === "") {
+        updateData.phone = null;
+      } else {
+        const phoneRegex = /^0\d{9}$/;
+
+        if (!phoneRegex.test(phone)) {
+          return res.status(400).json({
+            message: "Invalid phone number",
+          });
+        }
+
+        updateData.phone = phone;
+      }
+    }
+
+    if (typeof email === "string") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          message: "Invalid email",
+        });
+      }
+
+      const existed = await userService.getByEmail(email);
+
+      if (existed && existed.id !== currentUser.id) {
+        return res.status(400).json({
+          message: "Email already exists",
+        });
+      }
+
+      updateData.email = email;
+    }
 
     if (dateOfBirth !== undefined) {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
-        updateData.dateOfBirth = dateOfBirth;
-      } else {
+      if (dateOfBirth === null || dateOfBirth === "") {
         updateData.dateOfBirth = null;
-      }
-    }
+      } else {
+        const date = new Date(dateOfBirth);
 
-    if (req.file) {
-      if (currentUser.avatarPublicId) {
-        try {
-          await cloudinary.uploader.destroy(currentUser.avatarPublicId);
-        } catch (err) {
-          console.error("Delete old avatar failed:", err.message);
+        if (isNaN(date.getTime())) {
+          return res.status(400).json({
+            message: "Invalid date of birth",
+          });
         }
-      }
 
-      updateData.avatar = req.file.path;
-      updateData.avatarPublicId = req.file.filename;
+        updateData.dateOfBirth = dateOfBirth;
+      }
     }
 
-    const updated = await userService.update(req.params.id, updateData);
+    const updated = await userService.update(userId, updateData);
 
     return res.json({
-      message: "User updated",
+      message: "User updated successfully",
       user: updated,
     });
   } catch (err) {
-    console.error("updateUser error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("updateUserInfo error:", err);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.updateUserAvatar = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Avatar file is required",
+      });
+    }
+
+    const currentUser = await userService.getById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (currentUser.avatarPublicId) {
+      try {
+        await cloudinary.uploader.destroy(currentUser.avatarPublicId);
+      } catch (err) {
+        console.error("Delete old avatar failed:", err.message);
+      }
+    }
+
+    const updateData = {
+      avatar: req.file.path,
+      avatarPublicId: req.file.filename,
+    };
+
+    const updated = await userService.update(userId, updateData);
+
+    return res.json({
+      message: "Avatar updated successfully",
+      user: updated,
+    });
+  } catch (err) {
+    console.error("updateUserAvatar error:", err);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -165,5 +298,49 @@ exports.changeStatus = async (req, res) => {
   } catch (err) {
     console.error("changeStatus error:", err);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.updateMyAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Avatar file is required",
+      });
+    }
+
+    const currentUser = await userService.getById(req.user.id);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (currentUser.avatarPublicId) {
+      try {
+        await cloudinary.uploader.destroy(currentUser.avatarPublicId);
+      } catch (err) {
+        console.error("Delete old avatar failed:", err.message);
+      }
+    }
+
+    const updateData = {
+      avatar: req.file.path,
+      avatarPublicId: req.file.filename,
+    };
+
+    const updated = await userService.update(req.user.id, updateData);
+
+    return res.json({
+      message: "Avatar updated successfully",
+      user: updated,
+    });
+  } catch (err) {
+    console.error("updateMyAvatar error:", err);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };

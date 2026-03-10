@@ -32,8 +32,14 @@ router.put(
   "/:id",
   authMiddleware.verifyAccessToken,
   authMiddleware.requireAdmin,
+  userController.updateUserInfo,
+);
+
+router.put(
+  "/:id/avatar",
+  authMiddleware.verifyAccessToken,
   upload.single("avatar"),
-  userController.updateUser,
+  userController.updateUserAvatar,
 );
 
 router.patch(
@@ -43,4 +49,10 @@ router.patch(
   userController.changeStatus,
 );
 
+router.put(
+  "/me/avatar",
+  authMiddleware.verifyAccessToken,
+  upload.single("avatar"),
+  userController.updateMyAvatar,
+);
 module.exports = router;
