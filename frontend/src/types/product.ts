@@ -1,7 +1,4 @@
 import type { ProductVariantEntity } from "./product-variant";
-/* =========
- * Base type (khớp DB: products)
- * ========= */
 export type ProductEntity = {
   id: number;
   name: string;
@@ -12,7 +9,6 @@ export type ProductEntity = {
   tags?: string[] | null;
 
   status: "active" | "inactive";
-
   ratingAverage: number;
   ratingCount: number;
 
@@ -21,10 +17,6 @@ export type ProductEntity = {
   createdAt?: string;
   updatedAt?: string;
 };
-
-/* =========
- * UI / API aggregate type
- * ========= */
 export type Product = ProductEntity & {
   variants: ProductVariantEntity[];
 };

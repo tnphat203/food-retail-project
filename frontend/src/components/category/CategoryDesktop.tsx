@@ -1,5 +1,5 @@
 import { Menu } from "lucide-react";
-import type { CategoryTree } from "../../types/categories";
+import type { CategoryTree } from "@/types/categories";
 
 type Props = {
   categories: CategoryTree[];

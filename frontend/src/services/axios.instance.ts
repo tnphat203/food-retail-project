@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { ENV } from "../config/env";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8686/api";
+const BASE_URL = ENV.API_URL;
 
 let accessToken: string | null = null;
 
@@ -52,8 +53,9 @@ type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 const isAuthRoute = (url?: string) => {
   if (!url) return false;
 
- return ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"]
-  .some((p) => url.startsWith(p));
+  return ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"].some(
+    (p) => url.startsWith(p)
+  );
 };
 
 axiosInstance.interceptors.response.use(

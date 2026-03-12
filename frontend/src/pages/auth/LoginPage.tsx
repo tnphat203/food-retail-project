@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
-import AuthLayout from "../../components/auth/AuthLayout";
-import { ROUTES } from "../../constants/routes";
+import AuthLayout from "@components/auth/AuthLayout";
+import { ROUTES } from "@constants/routes";
 
-import TextInput from "../../components/ui/TextInput";
-import PasswordInput from "../../components/ui/PasswordInput";
-import ErrorBox from "../../components/ui/ErrorBox";
-import SubmitButton from "../../components/ui/SubmitButton";
+import TextInput from "@components/ui/TextInput";
+import PasswordInput from "@components/ui/PasswordInput";
+import ErrorBox from "@components/ui/ErrorBox";
+import SubmitButton from "@components/ui/SubmitButton";
 
 import { useLoginForm } from "./hooks/useLoginForm";
 

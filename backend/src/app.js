@@ -10,6 +10,7 @@ const uploadRoutes = require("./routes/upload.route");
 const authRoutes = require("./routes/auth.route");
 
 const userRoutes = require("./routes/user.route");
+const addressRoutes = require("./routes/address.route");
 const categoryRoutes = require("./routes/category.routes");
 const healthRoutes = require("./routes/health.route");
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/addresses", addressRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/", healthRoutes);

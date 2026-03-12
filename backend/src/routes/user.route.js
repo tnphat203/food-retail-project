@@ -3,19 +3,56 @@ const router = express.Router();
 
 const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
-const requireAdmin = require("../middlewares/requireAdmin.middleware");
+const upload = require("../middlewares/upload");
 
-router.get("/me", authMiddleware, userController.getMe);
-router.put("/me", authMiddleware, userController.updateMe);
+router.get("/me", authMiddleware.verifyAccessToken, userController.getMe);
 
-router.get("/", authMiddleware, requireAdmin, userController.getAllUsers);
-router.get("/:id", authMiddleware, requireAdmin, userController.getUserById);
-router.put("/:id", authMiddleware, requireAdmin, userController.updateUser);
+router.put(
+  "/me",
+  authMiddleware.verifyAccessToken,
+  upload.single("avatar"),
+  userController.updateMe,
+);
+
+router.get(
+  "/",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.getAllUsers,
+);
+
+router.get(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.getUserById,
+);
+
+router.put(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  userController.updateUserInfo,
+);
+
+router.put(
+  "/:id/avatar",
+  authMiddleware.verifyAccessToken,
+  upload.single("avatar"),
+  userController.updateUserAvatar,
+);
+
 router.patch(
   "/:id/status",
-  authMiddleware,
-  requireAdmin,
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
   userController.changeStatus,
 );
 
+router.put(
+  "/me/avatar",
+  authMiddleware.verifyAccessToken,
+  upload.single("avatar"),
+  userController.updateMyAvatar,
+);
 module.exports = router;

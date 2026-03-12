@@ -9,10 +9,10 @@ const { ENV } = require("./config/env");
   try {
     await sequelize.authenticate();
 
-    await sequelize.sync({ alter: true, logging: false });
+    await sequelize.sync({ logging: false });
 
     app.listen(ENV.PORT, () =>
-      console.log(`✅ Server running on port ${ENV.PORT}`)
+      console.log(`✅ Server running on port ${ENV.PORT}`),
     );
   } catch (error) {
     console.error("❌ Failed to start server:", error);

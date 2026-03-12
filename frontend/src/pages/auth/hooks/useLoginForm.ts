@@ -1,13 +1,19 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { ROUTES } from "../../../constants/routes";
-import { loginApi } from "../../../services/auth.api";
-import { useAuthStore } from "../../../store/authStore";
+import { ROUTES } from "@constants/routes";
+import { loginApi } from "@services/auth.api";
+import { useAuthStore } from "@store/authStore";
+
+type LocationState = {
+  from?: string;
+};
 
 export function useLoginForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const [email, setEmail] = useState("");
@@ -18,12 +24,13 @@ export function useLoginForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const emailTrimmed = useMemo(() => email.trim(), [email]);
+  const passwordTrimmed = useMemo(() => password.trim(), [password]);
 
   const validate = () => {
     if (!emailTrimmed) return "Vui lòng nhập email";
     if (!/^\S+@\S+\.\S+$/.test(emailTrimmed)) return "Email không hợp lệ";
-    if (!password.trim()) return "Vui lòng nhập mật khẩu";
-    if (password.trim().length < 6) return "Mật khẩu tối thiểu 6 ký tự";
+    if (!passwordTrimmed) return "Vui lòng nhập mật khẩu";
+    if (passwordTrimmed.length < 6) return "Mật khẩu tối thiểu 6 ký tự";
     return null;
   };
 
@@ -44,17 +51,36 @@ export function useLoginForm() {
 
       const { accessToken, user } = await loginApi({
         email: emailTrimmed,
-        password: password.trim(),
+        password: passwordTrimmed,
       });
 
       setAuth(accessToken, user);
-      navigate(ROUTES.HOME, { replace: true });
+
+      const state = location.state as LocationState | null;
+      const redirectTo = state?.from;
+
+      const isAdmin = user?.role === "admin";
+
+      if (redirectTo) {
+        if (redirectTo.startsWith("/admin") && !isAdmin) {
+          navigate(ROUTES.HOME, { replace: true });
+          return;
+        }
+
+        navigate(redirectTo, { replace: true });
+        return;
+      }
+
+      navigate(isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.HOME, {
+        replace: true,
+      });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setErrorMsg(error.response?.data?.message || "Đăng nhập thất bại");
       } else {
         setErrorMsg("Đã xảy ra lỗi, vui lòng thử lại");
       }
+
       setPassword("");
     } finally {
       setLoading(false);
