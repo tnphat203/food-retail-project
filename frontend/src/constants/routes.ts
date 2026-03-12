@@ -5,4 +5,12 @@ export const ROUTES = {
   CART: "/cart",
   CHECKOUT: "/checkout",
   PROFILE: "/profile",
+  ADMIN: "/admin",
+  ADMIN_DASHBOARD: "/admin/dashboard",
+  ADMIN_PRODUCTS: "/admin/products",
+  ADMIN_ORDERS: "/admin/orders",
+  ADMIN_CUSTOMERS: "/admin/customers",
+  ADMIN_SETTINGS: "/admin/settings",
+  ADMIN_VOUCHERS: "/admin/vouchers",
+  ADMIN_REVIEWS: "/admin/reviews",
 } as const;

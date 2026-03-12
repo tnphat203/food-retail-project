@@ -1,19 +1,28 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { ROUTES } from "../../../constants/routes";
-import { registerApi } from "../../../services/auth.api";
+import { ROUTES } from "@constants/routes";
+import { registerApi } from "@services/auth.api";
 
 type Gender = "male" | "female" | "other";
+
+interface RegisterForm {
+  firstName: string;
+  lastName: string;
+  gender: Gender;
+  phone: string;
+  email: string;
+  password: string;
+}
 
 export function useRegisterForm() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<RegisterForm>({
     firstName: "",
     lastName: "",
-    gender: "male" as Gender,
+    gender: "male",
     phone: "",
     email: "",
     password: "",
@@ -23,30 +32,32 @@ export function useRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const firstNameTrimmed = useMemo(() => form.firstName.trim(), [form.firstName]);
-  const lastNameTrimmed = useMemo(() => form.lastName.trim(), [form.lastName]);
-  const phoneTrimmed = useMemo(() => form.phone.trim(), [form.phone]);
-  const emailTrimmed = useMemo(
-    () => form.email.trim().toLowerCase(),
-    [form.email]
-  );
-  const passwordTrimmed = useMemo(() => form.password.trim(), [form.password]);
+  const updateField = (field: keyof RegisterForm, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
 
-  const validate = () => {
-    if (!lastNameTrimmed) return "Vui lòng nhập họ";
-    if (!firstNameTrimmed) return "Vui lòng nhập tên";
+    if (errorMsg) {
+      setErrorMsg(null);
+    }
+  };
 
-    if (!form.gender) return "Vui lòng chọn giới tính";
+  const validate = (data: RegisterForm) => {
+    if (!data.lastName) return "Vui lòng nhập họ";
+    if (!data.firstName) return "Vui lòng nhập tên";
 
-    if (!phoneTrimmed) return "Vui lòng nhập số điện thoại";
-    if (!/^0\d{9}$/.test(phoneTrimmed))
+    if (!data.gender) return "Vui lòng chọn giới tính";
+
+    if (!data.phone) return "Vui lòng nhập số điện thoại";
+    if (!/^0\d{9}$/.test(data.phone))
       return "Số điện thoại không hợp lệ (vd: 0912345678)";
 
-    if (!emailTrimmed) return "Vui lòng nhập email";
-    if (!/^\S+@\S+\.\S+$/.test(emailTrimmed)) return "Email không hợp lệ";
+    if (!data.email) return "Vui lòng nhập email";
+    if (!/^\S+@\S+\.\S+$/.test(data.email)) return "Email không hợp lệ";
 
-    if (!passwordTrimmed) return "Vui lòng nhập mật khẩu";
-    if (passwordTrimmed.length < 6) return "Mật khẩu tối thiểu 6 ký tự";
+    if (!data.password) return "Vui lòng nhập mật khẩu";
+    if (data.password.length < 6) return "Mật khẩu tối thiểu 6 ký tự";
 
     return null;
   };
@@ -57,7 +68,17 @@ export function useRegisterForm() {
 
     setErrorMsg(null);
 
-    const validationError = validate();
+    const data: RegisterForm = {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      gender: form.gender,
+      phone: form.phone.trim(),
+      email: form.email.trim().toLowerCase(),
+      password: form.password.trim(),
+    };
+
+    const validationError = validate(data);
+
     if (validationError) {
       setErrorMsg(validationError);
       return;
@@ -66,14 +87,7 @@ export function useRegisterForm() {
     try {
       setLoading(true);
 
-      await registerApi({
-        firstName: firstNameTrimmed,
-        lastName: lastNameTrimmed,
-        gender: form.gender,
-        phone: phoneTrimmed,
-        email: emailTrimmed,
-        password: passwordTrimmed,
-      });
+      await registerApi(data);
 
       navigate(ROUTES.LOGIN, {
         replace: true,
@@ -93,6 +107,7 @@ export function useRegisterForm() {
   return {
     form,
     setForm,
+    updateField,
     loading,
     errorMsg,
     showPassword,

@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import type { CategoryTree } from "../../types/categories";
+import type { CategoryTree } from "@/types/categories";
 
 type Props = {
   open: boolean;
