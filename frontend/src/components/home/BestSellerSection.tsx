@@ -1,4 +1,4 @@
-import type { Product } from "../../types/product";
+import type { Product } from "@/types/product";
 
 const PRODUCT_IMAGE =
   "https://res.cloudinary.com/dqucswhro/image/upload/v1769333596/kopiko_skfkhw.webp";

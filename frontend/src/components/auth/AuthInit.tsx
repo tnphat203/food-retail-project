@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { refreshApi } from "../../services/auth.api";
-import { useAuthStore } from "../../store/authStore";
+import { refreshApi } from "@services/auth.api";
+import { useAuthStore } from "@store/authStore";
 
 export default function AuthInit({ children }: { children: React.ReactNode }) {
   const setAuth = useAuthStore((s) => s.setAuth);

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { User } from "../../../types/user";
-import { getAllUsersApi } from "../../../services/users.api";
+import type { User,  } from "@/types/user";
+import { getAllUsersApi } from "@services/users.api";
+import type { GetAllUsersParams } from "@/types/user-api";
 
 type GenderFilter = "all" | NonNullable<User["gender"]>;
 type StatusFilter = "all" | NonNullable<User["status"]>;
 type LimitFilter = "10" | "20" | "50" | "100";
+type RoleFilter = "all" | User["role"];
 
 export function useAdminCustomers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -13,6 +15,7 @@ export function useAdminCustomers() {
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState<GenderFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [role, setRole] = useState<RoleFilter>("all");
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<LimitFilter>("10");
@@ -30,14 +33,17 @@ export function useAdminCustomers() {
     try {
       setLoading(true);
 
-      const res = await getAllUsersApi({
-        page,
-        limit: Number(limit),
-        search: search || undefined,
-        role: "customer",
-        status: status === "all" ? undefined : status,
-        gender: gender === "all" ? undefined : gender,
-      });
+    const params: GetAllUsersParams = {
+      page,
+      limit: Number(limit),
+      role: role === "all" ? "customer" : role,
+    };
+
+    if (search) params.search = search;
+    if (status !== "all") params.status = status;
+    if (gender !== "all") params.gender = gender;
+
+    const res = await getAllUsersApi(params);
 
       if (controller.signal.aborted) return;
 
@@ -50,11 +56,11 @@ export function useAdminCustomers() {
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
-  }, [page, limit, search, status, gender]);
+  }, [page, limit, search, status, gender, role]);
 
   useEffect(() => {
     setPage(1);
-  }, [search, status, gender, limit]);
+  }, [search, status, gender, role, limit]);
 
   useEffect(() => {
     fetchUsers();
@@ -62,12 +68,14 @@ export function useAdminCustomers() {
 
   return {
     users,
-    data: users, 
+    data: users,
     loading,
 
     search,
     gender,
     status,
+    role,
+
     page,
     limit,
     total,
@@ -79,7 +87,9 @@ export function useAdminCustomers() {
     setSearch,
     setGender,
     setStatus,
+    setRole,
     setLimit,
+
     goToPage: setPage,
 
     fetchUsers,

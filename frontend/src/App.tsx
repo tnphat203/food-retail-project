@@ -10,7 +10,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
-import AdminCustomersPage from "./pages/admin/AdminCustomersPage";
+import AdminCustomersPage from "./pages/admin/customerPage/AdminCustomersPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 
 import AdminVouchersPage from "./pages/admin/AdminVouchersPage";

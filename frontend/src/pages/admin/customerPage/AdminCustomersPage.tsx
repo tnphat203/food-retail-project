@@ -1,35 +1,30 @@
 import { useCallback, useMemo } from "react";
-import type { User as Customer } from "../../types/user";
+import type { User as Customer } from "@/types/user";
 
-import AdminPageHeader from "../../components/admin/AdminPageHeader";
-import AdminFiltersBar from "../../components/admin/AdminFiltersBar";
-import AdminTable from "../../components/admin/AdminTable";
-import ConfirmDialog from "../../components/admin/ConfirmDialog";
-import AdminPagination from "../../components/ui/AdminPagination";
+import AdminPageHeader from "@components/admin/AdminPageHeader";
+import AdminFiltersBar from "@components/admin/AdminFiltersBar";
+import AdminTable from "@components/admin/AdminTable";
+import ConfirmDialog from "@components/admin/ConfirmDialog";
+import AdminPagination from "@components/ui/AdminPagination";
 
-import CustomerViewModal from "../../components/admin/users/CustomerViewModal";
-import CustomerEditModal from "../../components/admin/users/CustomerEditModal";
+import CustomerViewModal from "@components/admin/users/CustomerViewModal";
+import CustomerEditModal from "@components/admin/users/CustomerEditModal";
 
-import { useAdminCustomers } from "../../hooks/admin/customer/useAdminCustomers";
-import { useCustomersAdminModals } from "../../hooks/admin/customer/useCustomersAdminModals";
+import { useAdminCustomers } from "@pages/admin/customerPage/hooks/useAdminCustomers";
+import { useCustomersAdminModals } from "@pages/admin/customerPage/hooks/useCustomersAdminModals";
+
+import AdminToast from "@/components/ui/AdminToast";
+
+import {
+  genderLabel,
+  statusLabel,
+  GENDER_FILTER_OPTIONS,
+  STATUS_FILTER_OPTIONS,
+} from "@/utils/userLabels";
 
 type GenderFilter = "all" | NonNullable<Customer["gender"]>;
 type StatusFilter = "all" | NonNullable<Customer["status"]>;
 type LimitFilter = "10" | "20" | "50";
-
-const GENDER_OPTIONS = [
-  { label: "Tất cả", value: "all" },
-  { label: "Nam", value: "male" },
-  { label: "Nữ", value: "female" },
-  { label: "Khác", value: "other" },
-] as const satisfies readonly { label: string; value: GenderFilter }[];
-
-const STATUS_OPTIONS = [
-  { label: "Tất cả", value: "all" },
-  { label: "Đang hoạt động", value: "active" },
-  { label: "Tạm ngưng", value: "inactive" },
-  { label: "Bị khoá", value: "banned" },
-] as const satisfies readonly { label: string; value: StatusFilter }[];
 
 const LIMIT_OPTIONS = [
   { label: "10", value: "10" },
@@ -73,28 +68,11 @@ export default function AdminCustomersPage() {
     openEdit,
     openEditById,
     closeEdit,
-    handleSaveEdit,
+    handleSaveInfo,
+    handleSaveAvatar,
+    getFieldError,
+    markTouched,
   } = modals;
-
-  const genderLabel = useCallback((g?: Customer["gender"]) => {
-    return g === "male"
-      ? "Nam"
-      : g === "female"
-        ? "Nữ"
-        : g === "other"
-          ? "Khác"
-          : "-";
-  }, []);
-
-  const statusLabel = useCallback((s?: Customer["status"]) => {
-    return s === "active"
-      ? "Đang hoạt động"
-      : s === "inactive"
-        ? "Tạm ngưng"
-        : s === "banned"
-          ? "Bị khoá"
-          : "-";
-  }, []);
 
   const handleManageAddress = useCallback((c: Customer) => {
     window.location.href = `/admin/customers/${c.id}/addresses`;
@@ -126,42 +104,86 @@ export default function AdminCustomersPage() {
               </div>
 
               <div>
-                <div className="font-medium">{name}</div>
+                <div className="font-medium text-gray-900">{name}</div>
                 <div className="text-xs text-gray-500">ID: {c.id}</div>
               </div>
             </div>
           );
         },
       },
-      { header: "Email", render: (c: Customer) => c.email },
-      { header: "SĐT", render: (c: Customer) => c.phone ?? "-" },
-      { header: "Giới tính", render: (c: Customer) => genderLabel(c.gender) },
-      { header: "Trạng thái", render: (c: Customer) => statusLabel(c.status) },
+      {
+        header: "Email",
+        render: (c: Customer) => (
+          <span className="text-gray-700 truncate max-w-[220px] block">
+            {c.email}
+          </span>
+        ),
+      },
+      {
+        header: "SĐT",
+        render: (c: Customer) => (
+          <span className="font-mono text-gray-700">{c.phone ?? "-"}</span>
+        ),
+      },
+      {
+        header: "Giới tính",
+        render: (c: Customer) => (
+          <span className="px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-700">
+            {genderLabel(c.gender)}
+          </span>
+        ),
+      },
+      {
+        header: "Trạng thái",
+        render: (c: Customer) => {
+          const map = {
+            active: "bg-green-50 text-green-700 border-green-200",
+            inactive: "bg-yellow-50 text-yellow-700 border-yellow-200",
+            banned: "bg-red-50 text-red-700 border-red-200",
+          };
+
+          const status = c.status ?? "inactive";
+
+          return (
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                map[status as keyof typeof map]
+              }`}
+            >
+              {statusLabel(c.status)}
+            </span>
+          );
+        },
+      },
       {
         header: "Thao tác",
         render: (c: Customer) => (
           <div className="flex gap-2">
-            <button onClick={() => openViewById(users, c.id)} className="btn">
+            <button
+              onClick={() => openViewById(users, c.id)}
+              className="px-3 py-1 text-xs rounded-md border border-gray-200 hover:bg-gray-50"
+            >
               Xem
             </button>
-            <button onClick={() => openEditById(users, c.id)} className="btn">
+
+            <button
+              onClick={() => openEditById(users, c.id)}
+              className="px-3 py-1 text-xs rounded-md border border-gray-200 hover:bg-gray-50"
+            >
               Sửa
             </button>
-            <button onClick={() => openConfirmBan(c.id)} className="btn-danger">
+
+            <button
+              onClick={() => openConfirmBan(c.id)}
+              className="px-3 py-1 text-xs rounded-md border border-red-200 text-red-600 hover:bg-red-50"
+            >
               Khoá
             </button>
           </div>
         ),
       },
     ],
-    [
-      users,
-      genderLabel,
-      statusLabel,
-      openViewById,
-      openEditById,
-      openConfirmBan,
-    ],
+    [users, openViewById, openEditById, openConfirmBan],
   );
 
   return (
@@ -179,13 +201,13 @@ export default function AdminCustomersPage() {
             label: "Giới tính",
             value: gender,
             onChange: (v) => setGender(v as GenderFilter),
-            options: GENDER_OPTIONS,
+            options: GENDER_FILTER_OPTIONS,
           },
           {
             label: "Trạng thái",
             value: status,
             onChange: (v) => setStatus(v as StatusFilter),
-            options: STATUS_OPTIONS,
+            options: STATUS_FILTER_OPTIONS,
           },
           {
             label: "Hiển thị",
@@ -218,15 +240,20 @@ export default function AdminCustomersPage() {
         onManageAddress={handleManageAddress}
         genderLabel={genderLabel}
         statusLabel={statusLabel}
+        avatarValue={modals.avatarValue}
+        setAvatarValue={modals.setAvatarValue}
+        onSaveAvatar={handleSaveAvatar}
       />
 
       <CustomerEditModal
-        open={!!editUser}
+        open={!!editUser && !!editForm}
         customer={editUser}
         form={editForm}
         setForm={setEditForm}
         onClose={closeEdit}
-        onSave={handleSaveEdit}
+        onSaveInfo={handleSaveInfo}
+        getFieldError={getFieldError}
+        markTouched={markTouched}
       />
 
       <ConfirmDialog
@@ -238,6 +265,12 @@ export default function AdminCustomersPage() {
         danger
         onClose={() => setDeleteId(null)}
         onConfirm={confirmBan}
+      />
+
+      <AdminToast
+        open={modals.toast.open}
+        message={modals.toast.message}
+        type={modals.toast.type}
       />
     </div>
   );

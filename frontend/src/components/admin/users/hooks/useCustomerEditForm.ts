@@ -1,102 +1,56 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  validateCustomerEditForm,
-  type EditForm,
-  type FormErrors,
+  validateCustomerInfoForm,
+  type EditInfoForm,
+  type InfoFormErrors,
 } from "./customerEditValidator";
 
-type ToastType = "success" | "error";
-
-export function useCustomerEditForm({
-  form,
-  onSave,
-  onClose,
-}: {
-  form: EditForm | null;
-  onSave: () => Promise<void>;
-  onClose: () => void;
-}) {
+export function useCustomerEditForm(form: EditInfoForm | null) {
   const [touched, setTouched] = useState<
-    Partial<Record<keyof EditForm, boolean>>
+    Partial<Record<keyof EditInfoForm, boolean>>
   >({});
 
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    type: "success" as ToastType,
-  });
-
-  const toastTimer = useRef<ReturnType<typeof window.setTimeout> | null>(null);
-
-  const showToast = (type: ToastType, message: string, ms = 1800) => {
-    setToast({ open: true, type, message });
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-
-    toastTimer.current = window.setTimeout(() => {
-      setToast((p) => ({ ...p, open: false }));
-    }, ms);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-    };
-  }, []);
-
-  const errors: FormErrors = useMemo(
-    () => validateCustomerEditForm(form),
+  const errors: InfoFormErrors = useMemo(
+    () => validateCustomerInfoForm(form),
     [form]
   );
 
+  const markTouched = (field: keyof EditInfoForm) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
   const markAllTouched = () => {
     if (!form) return;
-    const all: Partial<Record<keyof EditForm, boolean>> = {};
-    (Object.keys(form) as (keyof EditForm)[]).forEach((k) => (all[k] = true));
+
+    const all: Partial<Record<keyof EditInfoForm, boolean>> = {};
+
+    (Object.keys(form) as (keyof EditInfoForm)[]).forEach((k) => {
+      all[k] = true;
+    });
+
     setTouched(all);
   };
 
-  const getFieldError = (field: keyof EditForm) =>
-    touched[field] ? errors[field] : undefined;
-
-  const markTouched = (field: keyof EditForm) =>
-    setTouched((p) => ({ ...p, [field]: true }));
-
-  const handleSave = async () => {
-    if (!form) return;
-    markAllTouched();
-
-    if (Object.keys(errors).length > 0) {
-      showToast("error", "Vui lòng kiểm tra lại dữ liệu!");
-      return;
-    }
-
-    try {
-      await onSave();
-      showToast("success", "Lưu thành công!");
-    } catch (err: unknown) {
-      const status =
-        (err as { response?: { status?: number } })?.response?.status;
-
-      if (status === 409) {
-        showToast("error", "Email đã tồn tại!");
-      } else {
-        showToast("error", "Lưu thất bại!");
-      }
-    }
+  const getFieldError = (field: keyof EditInfoForm) => {
+    if (!touched[field]) return undefined;
+    return errors[field];
   };
 
-  const handleClose = () => {
+  const isValid = () => {
+    markAllTouched();
+    return Object.keys(errors).length === 0;
+  };
+
+  const resetTouched = () => {
     setTouched({});
-    setToast({ open: false, message: "", type: "success" });
-    onClose();
   };
 
   return {
-    toast,
     errors,
     getFieldError,
     markTouched,
-    handleSave,
-    handleClose,
+    markAllTouched,
+    isValid,
+    resetTouched,
   };
 }

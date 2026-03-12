@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { ROUTES } from "../../constants/routes";
+import { ROUTES } from "@constants/routes";
 
 const navItems = [
   { label: "Dashboard", to: ROUTES.ADMIN_DASHBOARD },

@@ -1,10 +1,9 @@
 import axiosInstance from "./axios.instance";
-import type { AxiosError } from "axios";
 import type { User } from "../types/user";
 import type {
   UsersPaginatedResponse,
   GetAllUsersParams,
-  UpdateUserPayload,
+  UpdateUserInfoPayload,
   UpdateMePayload,
   UserResponse,
 } from "../types/user-api";
@@ -20,38 +19,35 @@ export const getAllUsersApi = async (
   return data;
 };
 
-export const getUserByIdApi = async (id: number): Promise<User> => {
-  const { data } = await axiosInstance.get<User>(`${BASE_URL}/${id}`);
+export const updateUserInfoApi = async (
+  id: number,
+  payload: UpdateUserInfoPayload
+): Promise<UserResponse> => {
+  const { data } = await axiosInstance.put<UserResponse>(
+    `${BASE_URL}/${id}`,
+    payload
+  );
   return data;
 };
 
-export const updateUserApi = async (
+export const updateUserAvatarApi = async (
   id: number,
-  payload: UpdateUserPayload
+  file: File
 ): Promise<UserResponse> => {
-  console.log("🔄 updateUserApi request", { id, payload });
+  const formData = new FormData();
+  formData.append("avatar", file);
 
-  try {
-    const { data } = await axiosInstance.put<UserResponse>(
-      `${BASE_URL}/${id}`,
-      payload
-    );
+  const { data } = await axiosInstance.put<UserResponse>(
+    `${BASE_URL}/${id}/avatar`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-    console.log("✅ updateUserApi success", data);
-    return data;
-  } catch (e) {
-    const err = e as AxiosError;
-
-    console.error("❌ updateUserApi failed", {
-      id,
-      payload,
-      status: err.response?.status,
-      responseData: err.response?.data,
-      message: err.message,
-    });
-
-    throw err;
-  }
+  return data;
 };
 
 export const changeUserStatusApi = async (
@@ -71,6 +67,19 @@ export const updateMeApi = async (
   const { data } = await axiosInstance.put<UserResponse>(
     `${BASE_URL}/me`,
     payload
+  );
+  return data;
+};
+
+export const updateMyAvatarApi = async (
+  file: File
+): Promise<UserResponse> => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const { data } = await axiosInstance.put<UserResponse>(
+    `${BASE_URL}/me/avatar`,
+    formData
   );
   return data;
 };

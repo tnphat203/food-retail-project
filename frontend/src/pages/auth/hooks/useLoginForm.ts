@@ -2,9 +2,9 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { ROUTES } from "../../constants/routes";
-import { loginApi } from "../../services/auth.api";
-import { useAuthStore } from "../../store/authStore";
+import { ROUTES } from "@constants/routes";
+import { loginApi } from "@services/auth.api";
+import { useAuthStore } from "@store/authStore";
 
 type LocationState = {
   from?: string;

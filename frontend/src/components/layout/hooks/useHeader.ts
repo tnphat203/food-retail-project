@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useAuthStore } from "../../../store/authStore";
-import { logoutApi } from "../../../services/auth.api";
+import { useAuthStore } from "@store/authStore";
+import { logoutApi } from "@services/auth.api";
 
 export function useHeader() {
   const navigate = useNavigate();

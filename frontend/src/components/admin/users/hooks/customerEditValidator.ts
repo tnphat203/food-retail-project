@@ -1,9 +1,9 @@
-import type { User } from "../../../../types/user";
+import type { User } from "@/types/user";
 
 type StatusValue = NonNullable<User["status"]>;
 type GenderValue = NonNullable<User["gender"]>;
 
-export type EditForm = {
+export type EditInfoForm = {
   firstName: string;
   lastName: string;
   email: string;
@@ -11,46 +11,48 @@ export type EditForm = {
   gender: GenderValue;
   status: StatusValue;
   dateOfBirth: string;
-  avatar: string | File | undefined;
 };
 
-export type FormErrors = Partial<Record<keyof EditForm, string>>;
+export type AvatarValue = string | File | undefined;
+
+export type InfoFormErrors = Partial<Record<keyof EditInfoForm, string>>;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+0-9\s-]{9,15}$/;
+const PHONE_REGEX = /^0\d{9}$/;
 
 const MAX_NAME_LENGTH = 50;
 const MAX_EMAIL_LENGTH = 100;
-const MAX_PHONE_LENGTH = 20;
 
 const ALLOWED_STATUS: StatusValue[] = ["active", "inactive", "banned"];
 const ALLOWED_GENDER: GenderValue[] = ["male", "female", "other"];
 
-export function validateCustomerEditForm(
-  form: EditForm | null
-): FormErrors {
+export function validateCustomerInfoForm(
+  form: EditInfoForm | null
+): InfoFormErrors {
   if (!form) return {};
 
-  const errors: FormErrors = {};
+  const errors: InfoFormErrors = {};
 
-  if (!form.firstName.trim()) errors.firstName = "Vui lòng nhập họ";
-  else if (form.firstName.length > MAX_NAME_LENGTH)
+  const firstName = form.firstName.trim();
+  const lastName = form.lastName.trim();
+  const email = form.email.trim();
+  const phone = form.phone.trim();
+
+  if (!firstName) errors.firstName = "Vui lòng nhập họ";
+  else if (firstName.length > MAX_NAME_LENGTH)
     errors.firstName = "Họ tối đa 50 ký tự";
 
-  if (!form.lastName.trim()) errors.lastName = "Vui lòng nhập tên";
-  else if (form.lastName.length > MAX_NAME_LENGTH)
+  if (!lastName) errors.lastName = "Vui lòng nhập tên";
+  else if (lastName.length > MAX_NAME_LENGTH)
     errors.lastName = "Tên tối đa 50 ký tự";
 
-  if (!form.email.trim()) errors.email = "Vui lòng nhập email";
-  else if (!EMAIL_REGEX.test(form.email.trim()))
-    errors.email = "Email không hợp lệ";
-  else if (form.email.length > MAX_EMAIL_LENGTH)
-    errors.email = "Email quá dài";
+  if (!email) errors.email = "Vui lòng nhập email";
+  else if (!EMAIL_REGEX.test(email)) errors.email = "Email không hợp lệ";
+  else if (email.length > MAX_EMAIL_LENGTH) errors.email = "Email quá dài";
 
-  if (form.phone && !PHONE_REGEX.test(form.phone.trim()))
-    errors.phone = "SĐT không hợp lệ";
-  if (form.phone && form.phone.length > MAX_PHONE_LENGTH)
-    errors.phone = "SĐT quá dài";
+  if (!phone) errors.phone = "Vui lòng nhập số điện thoại";
+  else if (!PHONE_REGEX.test(phone))
+    errors.phone = "SĐT phải gồm 10 chữ số và bắt đầu bằng 0";
 
   if (!ALLOWED_STATUS.includes(form.status))
     errors.status = "Trạng thái không hợp lệ";
@@ -61,28 +63,57 @@ export function validateCustomerEditForm(
   if (!isValidDateOfBirth(form.dateOfBirth))
     errors.dateOfBirth = "Ngày sinh không hợp lệ";
 
-  if (form.avatar) {
-    if (typeof form.avatar === "string") {
-      if (!/^https?:\/\//.test(form.avatar))
-        errors.avatar = "Avatar phải là URL hợp lệ";
-    } else if (form.avatar instanceof File) {
-      if (!form.avatar.type.startsWith("image/"))
-        errors.avatar = "File phải là hình ảnh";
+  return errors;
+}
 
-      if (form.avatar.size > 2 * 1024 * 1024)
-        errors.avatar = "Kích thước tối đa 2MB";
+export function validateCustomerAvatar(
+  avatar: AvatarValue
+): string | undefined {
+  if (!avatar) return;
+
+  if (typeof avatar === "string") {
+    const isHttp = /^https?:\/\//.test(avatar);
+    const isBase64 = /^data:image\//.test(avatar);
+
+    if (!isHttp && !isBase64) {
+      return "Avatar phải là URL hoặc Base64 hợp lệ";
     }
   }
 
-  return errors;
+  if (avatar instanceof File) {
+    if (!avatar.type.startsWith("image/")) {
+      return "File phải là hình ảnh";
+    }
+
+    if (avatar.size > 2 * 1024 * 1024) {
+      return "Kích thước tối đa 2MB";
+    }
+  }
 }
 
 function isValidDateOfBirth(dob: string) {
   if (!dob) return true;
+
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return false;
 
   const [y, m, d] = dob.split("-").map(Number);
   const date = new Date(y, m - 1, d);
 
-  return !Number.isNaN(date.getTime()) && date <= new Date();
+  if (
+    date.getFullYear() !== y ||
+    date.getMonth() !== m - 1 ||
+    date.getDate() !== d
+  ) {
+    return false;
+  }
+
+  const today = new Date();
+
+  if (date > today) return false;
+
+  const age = today.getFullYear() - y;
+
+  if (age > 120) return false;
+
+  return true;
 }

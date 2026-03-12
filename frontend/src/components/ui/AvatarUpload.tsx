@@ -6,6 +6,7 @@ type Props = {
   onChange: (value: string | File) => void;
   label?: string;
   defaultImage?: string;
+  error?: string | undefined;
 };
 
 export default function AvatarUpload({
@@ -13,6 +14,7 @@ export default function AvatarUpload({
   onChange,
   label = "Avatar",
   defaultImage = "/default-avatar.png",
+  error,
 }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -73,6 +75,8 @@ export default function AvatarUpload({
           />
         </div>
       </div>
+
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }

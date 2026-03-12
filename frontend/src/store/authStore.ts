@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { User } from "../types/user";
-import { setAccessToken } from "../services/axios.instance";
+import type { User } from "@/types/user";
+import { setAccessToken } from "@services/axios.instance";
 
 interface AuthState {
-  user: User | null;
+  user: User | null;  
   isAuthenticated: boolean;
   hydrated: boolean;
 

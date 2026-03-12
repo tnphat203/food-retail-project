@@ -12,24 +12,32 @@ export type Paginated<T> = {
 
 export type UsersPaginatedResponse = Paginated<User>;
 
-export type UserResponse = {
+export interface UserResponse {
   message: string;
   user: User;
-};
+}
 
-export type GetAllUsersParams = {
+export interface GetAllUsersParams {
   page?: number;
   limit?: number;
-  search?: string | undefined;
-  role?: User["role"] | "";
-  status?: User["status"] | "" | undefined;
-  gender?: User["gender"] | undefined;
-};
 
-export type UpdateUserPayload = Partial<
+  search?: string;
+
+  role?: User["role"];
+  status?: User["status"];
+  gender?: User["gender"];
+}
+
+export type UpdateUserInfoPayload = Partial<
   Pick<
     User,
-    "status" | "firstName" | "lastName" | "email" | "phone" | "gender" | "dateOfBirth"
+    | "status"
+    | "firstName"
+    | "lastName"
+    | "email"
+    | "phone"
+    | "gender"
+    | "dateOfBirth"
   >
 >;
 

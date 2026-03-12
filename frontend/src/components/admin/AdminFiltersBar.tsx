@@ -1,25 +1,27 @@
-export type Option<T extends string = string> = {
+export type Option = {
   label: string;
-  value: T;
+  value: string;
 };
 
-export type FilterSelect<T extends string = string> = {
+export type FilterSelect = {
   label: string;
-  value: T;
-  onChange: (v: T) => void;
-  options: readonly Option<T>[];
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly Option[];
 };
 
 export type AdminFiltersBarProps = {
   search: string;
   onSearchChange: (v: string) => void;
   selects: FilterSelect[];
+  searchPlaceholder?: string;
 };
 
 export default function AdminFiltersBar({
   search,
   onSearchChange,
   selects,
+  searchPlaceholder = "Tìm kiếm...",
 }: AdminFiltersBarProps) {
   return (
     <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col gap-4">
@@ -27,11 +29,12 @@ export default function AdminFiltersBar({
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
           🔍
         </span>
+
         <input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Tìm kiếm khách hàng..."
-          className="w-full pl-9 pr-3 py-2 text-sm border rounded-lg 
+          placeholder={searchPlaceholder}
+          className="w-full pl-9 pr-3 py-2 text-sm border rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>

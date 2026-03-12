@@ -1,21 +1,23 @@
-export interface User {
+export type User = {
   id: number;
 
   firstName: string;
   lastName: string;
   email: string;
 
-  password?: string | null; 
-  phone?: string | null;
+  phone: string | null;
 
-  gender?: "male" | "female" | "other";
-  dateOfBirth?: string | null; 
+  gender: "male" | "female" | "other" | null;
 
-  avatar?: string | null;
+  dateOfBirth: string | null;
+
+  avatar: string | null;
+  avatarPublicId: string | null;
 
   role: "customer" | "staff" | "admin";
-  status?: "active" | "inactive" | "banned";
 
-  createdAt?: string;
-  updatedAt?: string;
-}
+  status: "active" | "inactive" | "banned";
+
+  createdAt: string;
+  updatedAt: string;
+};
