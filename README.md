@@ -153,3 +153,13 @@ food-retail-project/
 For detailed setup and API documentation, see:
 - [Frontend README](./frontend/README.md)
 - [Backend README](./backend/README.md)
+
+### Admin Access
+
+Some features of the GoSnack system, such as product management, order management, and user administration, are restricted to store managers (Admin).  
+For security reasons, access to these features is **not open by default**.  
+
+If you need to test or use admin functionalities, please **contact the project owner directly** to obtain temporary credentials or permission.  
+
+Contact:  
+**Tran Ngoc Phat** – tnphat203@gmail.com
