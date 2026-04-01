@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CategoryTree } from "@/types/categories";
-import { getCategoryTreeApi } from "@services/category";
+import { getCategoryTreeApi } from "@/services/category.api";
 
 export function useCategoryMenu() {
   const navigate = useNavigate();

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  width="150"
+  height="150"
+  viewBox="0 0 150 150"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Background -->
+  <rect width="150" height="150" rx="16" ry="16" fill="#F3F4F6"/>
+
+  <!-- Camera / Box Icon -->
+  <g transform="translate(45,35)">
+    <rect x="0" y="20" width="60" height="50" rx="4" ry="4" fill="#D1D5DB"/>
+    <circle cx="30" cy="45" r="10" fill="#9CA3AF"/>
+    <rect x="25" y="15" width="10" height="5" rx="1" ry="1" fill="#9CA3AF"/>
+  </g>
+
+  <!-- Text: Chưa có hình ảnh -->
+  <text
+    x="50%"
+    y="130"
+    text-anchor="middle"
+    font-size="12"
+    fill="#9CA3AF"
+    font-family="Arial, sans-serif"
+  >
+    Chưa có hình ảnh
+  </text>
+</svg>

@@ -31,7 +31,8 @@
       "@utils/*": ["src/utils/*"],
       "@types/*": ["src/types/*"],
       "@config/*": ["src/config/*"],
-      "@constants/*": ["src/constants/*"]
+      "@constants/*": ["src/constants/*"],
+      "@mappers/*": ["src/mappers/*"]
     }
   },
   "include": ["src"]

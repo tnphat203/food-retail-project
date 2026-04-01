@@ -8,7 +8,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
-import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminProductsPage from "./pages/admin/productPage/AdminProductsPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminCustomersPage from "./pages/admin/customerPage/AdminCustomersPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
