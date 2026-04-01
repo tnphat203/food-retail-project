@@ -37,14 +37,11 @@ exports.getAllPaginated = async ({
   search,
   categoryId,
   status,
-  sortBy = "createdAt",
+  sortBy = "updatedAt",
   order = "DESC",
 }) => {
   const where = {};
 
-  // ====================
-  // FILTER
-  // ====================
   if (categoryId && categoryId !== "all") {
     where.categoryId = categoryId;
   }
@@ -65,16 +62,12 @@ exports.getAllPaginated = async ({
 
   const offset = (page - 1) * limit;
 
-  // ====================
-  // SORT
-  // ====================
-  const allowedSortFields = ["createdAt", "ratingAverage", "ratingCount"];
-  const finalSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+  const allowedSortFields = ["updatedAt", "ratingAverage", "ratingCount"];
+  const finalSortBy = allowedSortFields.includes(sortBy) ? sortBy : "updatedAt";
   const finalOrder = String(order).toUpperCase() === "ASC" ? "ASC" : "DESC";
 
   let orderClause = [[finalSortBy, finalOrder]];
 
-  // Nếu sort theo ratingAverage, ưu tiên ratingAverage DESC rồi ratingCount DESC
   if (finalSortBy === "ratingAverage") {
     orderClause = [
       ["ratingAverage", "DESC"],
@@ -82,9 +75,6 @@ exports.getAllPaginated = async ({
     ];
   }
 
-  // ====================
-  // QUERY DATABASE
-  // ====================
   const { rows, count } = await Product.findAndCountAll({
     where,
     limit,
@@ -114,9 +104,6 @@ exports.getAllPaginated = async ({
     ],
   });
 
-  // ====================
-  // RETURN
-  // ====================
   return {
     data: rows,
     pagination: {
@@ -130,34 +117,25 @@ exports.getAllPaginated = async ({
 
 exports.updateProduct = async (id, data) => {
   const product = await Product.findByPk(id);
-
   if (!product) return null;
-
   await product.update(data);
-
   return product;
 };
 
 exports.deleteProduct = async (id) => {
   const product = await Product.findByPk(id);
-
   if (!product) return null;
-
   await product.destroy();
-
   return true;
 };
 
 exports.createVariant = async (productId, data) => {
   const product = await Product.findByPk(productId);
-
   if (!product) return null;
-
   const variant = await ProductVariant.create({
     ...data,
     productId,
   });
-
   return variant;
 };
 
@@ -176,12 +154,10 @@ exports.getVariantsByProduct = async (productId) => {
 exports.createVariantWeight = async (variantId, data) => {
   const variant = await ProductVariant.findByPk(variantId);
   if (!variant) return null;
-
   const weight = await ProductVariantWeight.create({
     ...data,
     variantId,
   });
-
   return weight;
 };
 

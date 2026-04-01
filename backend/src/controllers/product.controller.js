@@ -23,6 +23,19 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+exports.updateProductPartial = async (req, res) => {
+  try {
+    const product = await productService.updateProduct(req.params.id, req.body);
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    return res.json({ message: "Product updated successfully", product });
+  } catch (err) {
+    console.error("updateProductPartial error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 exports.getProducts = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);

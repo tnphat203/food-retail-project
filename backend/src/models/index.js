@@ -6,7 +6,7 @@ const Address = require("./address.model");
 const Category = require("./category.model");
 const Product = require("./product.model");
 const ProductVariant = require("./product_variant.model");
-const ProductVariantWeight = require("./product_variant_weight.model"); // <-- thêm vào
+const ProductVariantWeight = require("./product_variant_weight.model");
 
 const Cart = require("./cart.model");
 const CartItem = require("./cart_item.model");

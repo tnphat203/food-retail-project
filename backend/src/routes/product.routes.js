@@ -14,7 +14,12 @@ router.post(
 router.get("/", productController.getProducts);
 router.get("/top-rated", productController.getTopRatedProducts);
 router.get("/:id", productController.getProductById);
-
+router.patch(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.requireAdmin,
+  productController.updateProductPartial,
+);
 router.put(
   "/:id",
   authMiddleware.verifyAccessToken,
