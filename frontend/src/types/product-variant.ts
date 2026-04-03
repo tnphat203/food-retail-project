@@ -1,17 +1,13 @@
-export type WeightVariant = {
-  weight: string;
-  price: number;
-  stock: number;
-};
+import type { ProductVariantWeight } from "./product-variant-weight";
 
-export type ProductVariantEntity = {
+export type ProductVariant = {
   id: number;
   productId: number;
   flavor: string;
-  flavorCode: string;
-  weightVariants: WeightVariant[];
+  flavorCode?: string;
   status: "in_stock" | "out_of_stock" | "coming_soon";
-  images: string[];
+  images?: string[];
+  weights: ProductVariantWeight[];
   createdAt?: string;
   updatedAt?: string;
 };

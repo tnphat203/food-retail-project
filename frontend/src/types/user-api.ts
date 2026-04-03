@@ -1,15 +1,5 @@
+import type { Paginated } from "./common/pagination";
 import type { User } from "./user";
-
-export type Paginated<T> = {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-};
-
 export type UsersPaginatedResponse = Paginated<User>;
 
 export interface UserResponse {
